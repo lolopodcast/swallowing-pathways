@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breathing &amp; Swallowing Pathways | 呼吸與吞嚥路徑</title>
+<meta name="description" content="Bilingual animated patient-education module on breathing and swallowing pathways. 呼吸與吞嚥路徑中英雙語衛教動畫。">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { fontFamily: { sans: ['Inter','"Noto Sans TC"','sans-serif'], serif: ['Merriweather','"Noto Serif TC"','serif'] } } }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+<style>
+@keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
+.animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+.perspective { perspective: 1000px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.rotate-y-180 { transform: rotateY(180deg); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+header, footer, button, [role="button"], .ui-decoration { -webkit-user-select: none; user-select: none; }
+input, textarea, select { -webkit-user-select: text; user-select: text; }
+
+/* ---- Anatomy SVG tokens (light) ---- */
+:root{
+  --ink:#3b4652; --skin:#f6e6df; --cavity:#fffaf7; --bone:#ece4d2; --boneStroke:#a8987a;
+  --tongue:#e8a1a1; --tongueStroke:#b9636a; --soft:#e7b3ad;
+  --air:#2a86cf; --food:#e07b22; --foodStroke:#9a4c0d;
+  --naso:#8dbb5e; --oro:#3e9ea0; --laryngo:#8f5fa8;
+  --trach:#d6e8f6; --eso:#fbe2c8; --spine:#e6dfd0; --spineStroke:#c4b9a2;
+  --accent:#004030; --label:#1e293b; --alert:#d43c3c;
+}
+.dark{
+  --ink:#c3ccd6; --skin:#2e2629; --cavity:#1b1a1d; --bone:#4f4a40; --boneStroke:#9b8f74;
+  --tongue:#9b4f58; --tongueStroke:#d58a92; --soft:#8a5a57;
+  --air:#5fb3f0; --food:#f2994a; --foodStroke:#ffd2a6;
+  --trach:#1d3a52; --eso:#4b3622; --spine:#35322c; --spineStroke:#5a5446;
+  --accent:#D8C3A5; --label:#e2e8f0; --alert:#ff6b6b;
+}
+.svgwrap svg text{font-family:Inter,"Noto Sans TC",sans-serif}
+.pt{stroke:var(--ink);stroke-width:1.4;transition:filter .2s}
+.pt.on{stroke:var(--accent)!important;stroke-width:3;filter:drop-shadow(0 0 5px var(--accent))}
+.rg{fill-opacity:.32;stroke:none}
+.rg.on{fill-opacity:.7}
+.lbl{cursor:pointer}
+.lbl text{fill:var(--label);font-size:13px}
+.lbl line{stroke:var(--ink);stroke-width:.8;opacity:.55}
+.lbl circle{fill:var(--ink)}
+.lbl.on text{fill:var(--accent);font-weight:700}
+.lbl.on line{stroke:var(--accent);opacity:1;stroke-width:1.6}
+.lbl:focus{outline:none}
+.lbl:focus-visible text{text-decoration:underline}
+@keyframes dashflow{to{stroke-dashoffset:-28}}
+.flow{stroke-dasharray:8 6;animation:dashflow 1.2s linear infinite}
+.flow-food{stroke-dasharray:8 6}
+@media (prefers-reduced-motion: reduce){ .flow{animation:none} .animate-fade-in{animation:none} }
+input[type=range]{accent-color:#004030}
+.dark input[type=range]{accent-color:#D8C3A5}
+</style>
+</head>
+<body class="bg-[#f4f4f4] dark:bg-[#121212] text-slate-800 dark:text-slate-200 font-sans selection:bg-[#004030] selection:text-white dark:selection:bg-[#D8C3A5] dark:selection:text-[#004030]">
+<div id="root"></div>
+
+<script>
+/* ===== Front-end protection (runs before React) ===== */
+(function(){
+  var ALLOWED = ['lolopodcast.github.io','localhost','127.0.0.1'];
+  var REDIRECT = 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo';
+  var isFile = location.protocol === 'file:';
+  if (!isFile && !ALLOWED.some(function(d){ return location.hostname === d || location.hostname.endsWith('.'+d); })) {
+    document.body.innerHTML = '<div style="text-align:center;padding:60px;font-family:sans-serif"><h1>Access Denied</h1><p>This resource is not authorised on this domain.</p></div>';
+    window.__BLOCKED__ = true;
+    setTimeout(function(){ location.href = REDIRECT; }, 3000);
+    return;
+  }
+  if (window.self !== window.top) {
+    try { window.top.location.href = window.self.location.href; }
+    catch(e) { document.body.innerHTML = '<div style="text-align:center;padding:60px"><h1>Frame Blocked</h1><p>This content cannot be embedded.</p></div>'; window.__BLOCKED__ = true; }
+  }
+})();
+window.COPYRIGHT_MSG = 'Intellectual Property of Prof. Shihmin Lo';
+window.showCopyrightToast = function(){
+  var el = document.getElementById('cp-toast');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'cp-toast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:56px;transform:translateX(-50%);background:#004030;color:#D8C3A5;padding:10px 18px;border-radius:10px;font:600 13px Inter,sans-serif;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:opacity .3s;border:1px solid rgba(216,195,165,.4)';
+    document.body.appendChild(el);
+  }
+  el.textContent = '© ' + window.COPYRIGHT_MSG; el.style.opacity = '1';
+  clearTimeout(window.__cpT); window.__cpT = setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+};
+document.addEventListener('contextmenu', function(e){
+  var sel = (window.getSelection() || '').toString().trim();
+  if (sel.length > 0) return true;
+  e.preventDefault(); window.showCopyrightToast();
+});
+document.addEventListener('keydown', function(e){
+  var k = (e.key || '').toLowerCase();
+  if (e.key === 'F12') { e.preventDefault(); window.showCopyrightToast(); return; }
+  if (e.ctrlKey && k === 'u') { e.preventDefault(); window.showCopyrightToast(); return; }
+  if (e.ctrlKey && e.shiftKey && ['i','j','c'].indexOf(k) >= 0) { e.preventDefault(); window.showCopyrightToast(); return; }
+});
+document.addEventListener('dragstart', function(e){
+  if (e.target.tagName === 'IMG' || (e.target.closest && e.target.closest('svg'))) e.preventDefault();
+});
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ===== Answer obfuscation ===== */
+const _SALT = 'SWL2026';
+const _e = (s, n) => { const p = s + ':' + n; let r = ''; for (let i = 0; i < p.length; i++) r += String.fromCharCode(p.charCodeAt(i) ^ ((i + 7) * 3 & 0xFF)); return btoa(r); };
+const _d = (token) => { const decoded = atob(token); let r = ''; for (let i = 0; i < decoded.length; i++) r += String.fromCharCode(decoded.charCodeAt(i) ^ ((i + 7) * 3 & 0xFF)); return parseInt(r.split(':')[1], 10); };
+const _A0 = _e(_SALT, 0), _A1 = _e(_SALT, 1), _A2 = _e(_SALT, 2), _A3 = _e(_SALT, 3);
+
+const NUM_LEARN = 6;
+const TOTAL = 1 + NUM_LEARN + 3;
+const IDX_LAB = NUM_LEARN + 1;
+const IDX_RES = NUM_LEARN + 2;
+const IDX_ANA = NUM_LEARN + 3;
+const VERSION = '2026.10.23';
+
+/* ===== Icons ===== */
+const Ic = ({ size = 20, children, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">{children}</svg>
+);
+const IconBookOpen = (p) => <Ic {...p}><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></Ic>;
+const IconAlertTriangle = (p) => <Ic {...p}><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17"/></Ic>;
+const IconCheckCircle = (p) => <Ic {...p}><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></Ic>;
+const IconGlobe = (p) => <Ic {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></Ic>;
+const IconChevronRight = (p) => <Ic {...p}><polyline points="9 18 15 12 9 6"/></Ic>;
+const IconChevronUp = (p) => <Ic {...p}><polyline points="18 15 12 9 6 15"/></Ic>;
+const IconMenu = (p) => <Ic {...p}><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></Ic>;
+const IconX = (p) => <Ic {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Ic>;
+const IconMoon = (p) => <Ic {...p}><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></Ic>;
+const IconSun = (p) => <Ic {...p}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></Ic>;
+const IconPlay = (p) => <Ic {...p}><polygon points="6 3 20 12 6 21 6 3"/></Ic>;
+const IconPause = (p) => <Ic {...p}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></Ic>;
+const IconSquare = (p) => <Ic {...p}><rect x="5" y="5" width="14" height="14" rx="1"/></Ic>;
+const IconArrowRight = (p) => <Ic {...p}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></Ic>;
+const IconActivity = (p) => <Ic {...p}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></Ic>;
+const IconCpu = (p) => <Ic {...p}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></Ic>;
+const IconTrendingUp = (p) => <Ic {...p}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></Ic>;
+const IconLayers = (p) => <Ic {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></Ic>;
+const IconFlag = (p) => <Ic {...p}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></Ic>;
+const IconZap = (p) => <Ic {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></Ic>;
+const IconFlask = (p) => <Ic {...p}><path d="M9 3h6"/><path d="M10 3v6L4 20a1 1 0 0 0 .9 1.5h14.2A1 1 0 0 0 20 20L14 9V3"/></Ic>;
+const IconZapLab = (p) => <Ic {...p}><path d="M9 3h6"/><path d="M10 3v6L4 20a1 1 0 0 0 .9 1.5h14.2A1 1 0 0 0 20 20L14 9V3"/><polyline points="12 12 10.5 15.5 13.5 15.5 12 19"/></Ic>;
+const IconHome = (p) => <Ic {...p}><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></Ic>;
+const IconRestart = (p) => <Ic {...p}><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></Ic>;
+
+/* ===== Animation engine ===== */
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const ramp = (t, a, b) => clamp01((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+function mkPath(pts) {
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) cum.push(cum[i-1] + Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]));
+  const L = cum[cum.length-1];
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i+1][0]) / 2, my = (pts[i][1] + pts[i+1][1]) / 2;
+    d += ` Q${pts[i][0]},${pts[i][1]} ${mx},${my}`;
+  }
+  const last = pts[pts.length-1]; d += ` L${last[0]},${last[1]}`;
+  const at = (f) => {
+    const s = clamp01(f) * L; let i = 1;
+    while (i < cum.length - 1 && cum[i] < s) i++;
+    const k = (s - cum[i-1]) / ((cum[i] - cum[i-1]) || 1);
+    return [lerp(pts[i-1][0], pts[i][0], k), lerp(pts[i-1][1], pts[i][1], k)];
+  };
+  return { d, at };
+}
+const FOOD = mkPath([[140,250],[180,238],[220,232],[252,240],[272,262],[285,285],[296,315],[300,345],[301,375],[301,420],[301,470],[301,540]]);
+const ASP  = mkPath([[140,250],[180,238],[220,232],[252,240],[272,262],[285,285],[296,315],[280,340],[264,362],[259,392],[259,440],[259,490]]);
+const AIR  = mkPath([[84,206],[120,184],[180,170],[248,168],[290,186],[302,226],[300,268],[292,300],[278,328],[262,352],[259,392],[259,460],[259,545]]);
+
+const REST = { tongue:0, soft:0, larynx:0, epi:0, vocal:0, ues:0, f:0, bolus:false, apnea:false, phase:'rest', peri:false, cough:false, inTrachea:false, kind:'swallow' };
+
+const swallowState = (t) => {
+  const back = ramp(t, 0.55, 0.66);
+  const s = {
+    tongue: ramp(t,0.05,0.18) - ramp(t,0.3,0.42),
+    soft: ramp(t,0.2,0.29) - back,
+    larynx: ramp(t,0.26,0.34) - back,
+    epi: ramp(t,0.29,0.38) - back,
+    vocal: ramp(t,0.24,0.3) - ramp(t,0.57,0.66),
+    ues: ramp(t,0.38,0.44) - ramp(t,0.54,0.6),
+  };
+  let f;
+  if (t < 0.05) f = 0;
+  else if (t < 0.25) f = lerp(0, 0.27, (t-0.05)/0.2);
+  else if (t < 0.55) f = lerp(0.27, 0.65, (t-0.25)/0.3);
+  else f = lerp(0.65, 1, Math.min(1, (t-0.55)/0.4));
+  const phase = t < 0.25 ? 'oral' : t < 0.55 ? 'pharyngeal' : 'esophageal';
+  return { ...s, f, bolus: t < 0.97, apnea: s.vocal > 0.5, phase, peri: phase === 'esophageal' && t < 0.95, cough:false, inTrachea:false, kind:'swallow' };
+};
+const aspState = (t) => {
+  const back = ramp(t, 0.86, 0.94);
+  const s = {
+    tongue: ramp(t,0.05,0.18) - ramp(t,0.3,0.42),
+    soft: ramp(t,0.2,0.29) - back,
+    larynx: ramp(t,0.58,0.68) - back,
+    epi: ramp(t,0.6,0.7) - back,
+    vocal: ramp(t,0.55,0.62) - ramp(t,0.68,0.72),
+    ues: 0,
+  };
+  let f;
+  if (t < 0.05) f = 0;
+  else if (t < 0.25) f = lerp(0, 0.296, (t-0.05)/0.2);
+  else if (t < 0.6) f = lerp(0.296, 1, (t-0.25)/0.35);
+  else if (t < 0.7) f = 1;
+  else f = lerp(1, 0.62, ramp(t,0.7,0.85));
+  const phase = t < 0.25 ? 'oral' : t < 0.7 ? 'aspiration' : 'cough';
+  return { ...s, f, bolus: t < 0.97, apnea:false, phase, peri:false, cough: t >= 0.7 && t < 0.9, inTrachea: t > 0.5 && t < 0.9, kind:'asp' };
+};
+
+const MODES = {
+  anatomy:    { kind:'static' },
+  breath:     { kind:'breath', dur:4 },
+  oral:       { kind:'swallow', range:[0,0.27], dur:3.2 },
+  pharyngeal: { kind:'swallow', range:[0.2,0.62], dur:3.6 },
+  esophageal: { kind:'swallow', range:[0.5,1], dur:4.5 },
+  full:       { kind:'swallow', range:[0,1], dur:9 },
+  aspiration: { kind:'asp', range:[0,1], dur:9 },
+};
+const stateFor = (mode, u) => {
+  const m = MODES[mode];
+  if (m.kind === 'swallow') return swallowState(lerp(m.range[0], m.range[1], u));
+  if (m.kind === 'asp') return aspState(lerp(m.range[0], m.range[1], u));
+  if (m.kind === 'breath') return { ...REST, phase:'breath', kind:'breath' };
+  return { ...REST };
+};
+
+const reduceMotion = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+
+function useAnimLoop(dur, active = true) {
+  const [u, setU] = useState(0);
+  const [playing, setPlaying] = useState(() => active && !reduceMotion());
+  const [speed, setSpeed] = useState(1);
+  const ref = useRef({ u: 0, hold: 0, last: 0 });
+  useEffect(() => {
+    if (!playing || !dur) return;
+    let raf;
+    ref.current.last = performance.now();
+    const step = (now) => {
+      const dt = Math.min(0.1, (now - ref.current.last) / 1000); ref.current.last = now;
+      const r = ref.current;
+      if (r.hold > 0) { r.hold -= dt; if (r.hold <= 0) { r.u = 0; } }
+      else { r.u += dt * speed / dur; if (r.u >= 1) { r.u = 1; r.hold = 1.0; } }
+      setU(r.u);
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [playing, speed, dur]);
+  const seek = (v) => { ref.current.u = v; ref.current.hold = 0; setU(v); };
+  return { u, playing, setPlaying, speed, setSpeed, seek };
+}
+
+/* ===== Original sagittal head & neck SVG ===== */
+const LABELS = [
+  { id:'nasal',   ax:190, ay:160, ly:118 },
+  { id:'naso',    ax:292, ay:174, ly:156 },
+  { id:'hard',    ax:175, ay:207, ly:194 },
+  { id:'soft',    ax:262, ay:226, ly:232 },
+  { id:'oro',     ax:306, ay:258, ly:268 },
+  { id:'tongue',  ax:196, ay:262, ly:304 },
+  { id:'epi',     ax:266, ay:302, ly:338 },
+  { id:'laryngo', ax:306, ay:335, ly:372 },
+  { id:'vocal',   ax:259, ay:390, ly:408 },
+  { id:'eso',     ax:301, ay:470, ly:452 },
+  { id:'trachea', ax:259, ay:505, ly:500 },
+];
+const PART_NAMES = {
+  nasal:['鼻腔','Nasal cavity'], naso:['鼻咽','Nasopharynx'], hard:['硬顎','Hard palate'], soft:['軟顎','Soft palate'],
+  oro:['口咽','Oropharynx'], tongue:['舌頭','Tongue'], epi:['會厭','Epiglottis'], laryngo:['喉咽','Laryngopharynx'],
+  vocal:['聲帶','Vocal folds'], eso:['食道','Oesophagus'], trachea:['氣管','Trachea'],
+};
+const HEAD = "M175,20 C140,30 125,70 128,110 C125,135 100,170 75,198 C72,206 80,210 92,210 L108,212 C104,222 100,232 100,244 C100,252 104,256 110,258 L122,262 L110,266 C102,270 100,278 102,288 C104,300 102,315 108,330 C114,342 150,345 200,350 C215,360 222,380 228,410 L235,560 L395,560 L392,290 C400,230 415,170 395,110 C360,30 260,5 175,20 Z";
+
+const SwallowSVG = ({ mode, u, lang, active, setActive, compact = false, breathU = 0 }) => {
+  const s = stateFor(mode, u);
+  const on = (id) => (active === id ? ' on' : '');
+  const showLabels = !compact;
+  const bp = s.bolus ? (s.kind === 'asp' ? ASP.at(s.f) : FOOD.at(s.f)) : null;
+  const shake = s.cough ? Math.sin(u * 900) * 2.2 : 0;
+  const uesRx = 17 - 12 * s.ues;
+  const vb = compact ? "60 100 350 460" : "0 0 640 560";
+  const showFoodPath = ['oral','pharyngeal','esophageal','full','anatomy'].includes(mode);
+  const showAirPath = mode === 'breath' || mode === 'anatomy';
+  const airDots = mode === 'breath' ? [0, 1/3, 2/3].map(k => AIR.at((breathU + k) % 1)) : [];
+  const pick = (id) => setActive && setActive(active === id ? null : id);
+  return (
+    <svg viewBox={vb} className="w-full h-auto block" draggable="false" role="img"
+      aria-label={lang === 'zh' ? '頭頸部矢狀切面吞嚥示意動畫' : 'Animated sagittal section of the head and neck during swallowing'}>
+      <g transform={`translate(${shake},0)`}>
+        {/* silhouette */}
+        <path d={HEAD} fill="var(--skin)" fillOpacity="0.85" stroke="var(--ink)" strokeWidth="1.6"/>
+        {/* spine */}
+        {[0,1,2,3,4,5,6,7].map(i => <rect key={i} x="340" y={222 + i*42} width="40" height="34" rx="7" fill="var(--spine)" stroke="var(--spineStroke)" strokeWidth="1"/>)}
+        {/* cavities */}
+        <path className={'pt' + on('nasal')} d="M112,140 C150,122 232,126 262,148 L262,198 L114,200 C104,182 104,160 112,140 Z" fill="var(--cavity)"/>
+        <path d="M126,152 C160,140 210,142 236,156 M122,170 C160,160 214,162 244,174 M124,188 C170,182 220,184 250,190" fill="none" stroke="var(--ink)" strokeOpacity=".35" strokeWidth="1.2"/>
+        <path d="M114,216 L232,214 C252,216 266,226 268,240 L268,300 L230,330 L130,300 C118,290 112,276 114,262 Z" fill="var(--cavity)" stroke="var(--ink)" strokeWidth="1"/>
+        <path d="M262,148 C298,146 318,168 318,212 L318,362 L240,350 C248,335 256,320 262,300 L268,240 L262,198 Z" fill="var(--cavity)" stroke="var(--ink)" strokeWidth="1.2"/>
+        {/* pharynx regions */}
+        <path className={'rg' + on('naso')} fill="var(--naso)" d="M262,150 C296,150 316,170 318,212 L268,214 L262,198 Z"/>
+        <path className={'rg' + on('oro')} fill="var(--oro)" d="M268,214 L318,212 L318,300 L262,300 Z"/>
+        <path className={'rg' + on('laryngo')} fill="var(--laryngo)" d="M262,300 L318,300 L318,362 L240,350 C248,335 256,320 262,300 Z"/>
+        {/* trachea & oesophagus */}
+        <path className={'pt' + on('trachea')} d="M240,352 L278,358 L278,560 L240,560 Z" fill={s.inTrachea ? 'var(--alert)' : 'var(--trach)'} fillOpacity={s.inTrachea ? 0.35 : 1}/>
+        {[420,445,470,495,520,545].map(y => <path key={y} d={`M242,${y} Q259,${y+5} 276,${y}`} fill="none" stroke="var(--ink)" strokeOpacity=".35"/>)}
+        <path className={'pt' + on('eso')} d="M284,362 L318,362 L318,560 L284,560 Z" fill="var(--eso)"/>
+        {/* UES */}
+        <ellipse cx="284" cy="368" rx={uesRx} ry="6" fill="var(--skin)" stroke="var(--ink)" strokeWidth="1"/>
+        <ellipse cx="318" cy="368" rx={uesRx} ry="6" fill="var(--skin)" stroke="var(--ink)" strokeWidth="1"/>
+        {/* peristalsis ring */}
+        {s.peri && bp && bp[1] > 395 && (
+          <g>
+            <ellipse cx="284" cy={bp[1]-24} rx="13" ry="5" fill="var(--skin)" stroke="var(--ink)" strokeWidth="1"/>
+            <ellipse cx="318" cy={bp[1]-24} rx="13" ry="5" fill="var(--skin)" stroke="var(--ink)" strokeWidth="1"/>
+          </g>
+        )}
+        {/* hard palate & teeth */}
+        <path className={'pt' + on('hard')} d="M114,202 L234,202 L234,212 L116,214 Z" fill="var(--bone)" style={{stroke:'var(--boneStroke)'}}/>
+        <rect x="112" y="244" width="8" height="14" rx="2" fill="var(--bone)" stroke="var(--boneStroke)"/>
+        <rect x="112" y="266" width="8" height="14" rx="2" fill="var(--bone)" stroke="var(--boneStroke)"/>
+        <path d="M118,288 C150,326 190,340 222,343" fill="none" stroke="var(--boneStroke)" strokeWidth="5" strokeLinecap="round" opacity=".7"/>
+        {/* tongue */}
+        <g transform={`translate(${4*s.tongue},${-7*s.tongue})`}>
+          <path className={'pt' + on('tongue')} d="M122,258 C138,232 196,218 240,222 C262,228 268,262 258,300 C248,326 214,330 186,318 C158,306 134,290 122,268 Z" fill="var(--tongue)" style={{stroke:'var(--tongueStroke)'}}/>
+        </g>
+        {/* soft palate */}
+        <g transform={`translate(234,207) rotate(${20 - 55*s.soft})`}>
+          <path className={'pt' + on('soft')} d="M0,-5 C25,-5 52,5 70,28 C74,36 66,42 60,36 C46,20 22,8 0,6 Z" fill="var(--soft)"/>
+        </g>
+        {/* larynx complex */}
+        <g transform={`translate(${-3*s.larynx},${-14*s.larynx})`}>
+          <ellipse cx="222" cy="340" rx="10" ry="4" fill="var(--bone)" stroke="var(--boneStroke)"/>
+          <path d="M236,346 L282,353 L282,406 L236,406 Z" fill="var(--bone)" fillOpacity=".25" stroke="var(--boneStroke)" strokeDasharray="3 3"/>
+          <g transform={`translate(${3.5*s.vocal},0)`}><path className={'pt' + on('vocal')} d="M240,384 L256,390 L240,396 Z" fill="var(--soft)"/></g>
+          <g transform={`translate(${-3.5*s.vocal},0)`}><path className={'pt' + on('vocal')} d="M278,384 L262,390 L278,396 Z" fill="var(--soft)"/></g>
+          <g transform={`translate(262,335) rotate(${95*s.epi})`}>
+            <path className={'pt' + on('epi')} d="M-4,0 C-7,-18 -3,-34 5,-40 C12,-34 9,-16 4,0 Z" fill="#f2d7a6" style={{stroke:'var(--boneStroke)'}}/>
+          </g>
+        </g>
+        {/* pathways */}
+        {showAirPath && <path d={AIR.d} fill="none" stroke="var(--air)" strokeWidth="3" strokeLinecap="round" className={mode === 'breath' ? 'flow' : 'flow-food'} opacity=".85"/>}
+        {showFoodPath && <path d={FOOD.d} fill="none" stroke="var(--food)" strokeWidth="3" strokeLinecap="round" className="flow-food" opacity={mode === 'anatomy' ? .85 : .35}/>}
+        {airDots.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="5" fill="var(--air)" stroke="#fff" strokeWidth="1.2"/>)}
+        {bp && <circle cx={bp[0]} cy={bp[1]} r="9" fill="var(--food)" stroke="var(--foodStroke)" strokeWidth="1.5"/>}
+        {s.cough && <g>
+          {[0,1,2].map(i => <path key={i} d={`M${250+i*8},${330-i*4} q-6,-10 0,-20`} fill="none" stroke="var(--alert)" strokeWidth="2.2" strokeLinecap="round" opacity={0.5 + 0.5*Math.abs(Math.sin(u*40+i))}/>)}
+        </g>}
+      </g>
+      {showLabels && LABELS.map(l => {
+        const nm = PART_NAMES[l.id];
+        const txt = lang === 'zh' ? `${nm[0]} ${nm[1]}` : `${nm[1]} ${nm[0]}`;
+        return (
+          <g key={l.id} className={'lbl' + on(l.id)} tabIndex="0" role="button" aria-label={txt}
+             onClick={() => pick(l.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(l.id); } }}>
+            <circle cx={l.ax} cy={l.ay} r="2.6"/>
+            <line x1={l.ax} y1={l.ay} x2="440" y2={l.ly}/>
+            <rect x="442" y={l.ly-11} width="190" height="22" fill="transparent"/>
+            <text x="448" y={l.ly+4.5}>{txt}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+const PhasePill = ({ s, t, mode }) => {
+  const key = s.phase === 'rest' ? (mode === 'anatomy' ? 'phase_anatomy' : 'phase_rest') : `phase_${s.phase}`;
+  const tone = s.phase === 'aspiration' || s.phase === 'cough' ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-[#004030]/10 text-[#004030] dark:bg-[#D8C3A5]/15 dark:text-[#D8C3A5]';
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      <span className={`px-3 py-1 rounded-full font-bold ${tone}`}>{t[key]}</span>
+      {s.apnea && <span className="px-3 py-1 rounded-full font-semibold bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200">{t.apnea}</span>}
+      {s.cough && <span className="px-3 py-1 rounded-full font-semibold bg-red-600 text-white">{t.cough_alert}</span>}
+    </div>
+  );
+};
+
+const PlayerControls = ({ loop, t }) => (
+  <div className="flex flex-wrap items-center gap-2 mt-3">
+    <button onClick={() => loop.setPlaying(!loop.playing)} aria-label={loop.playing ? t.ctrl_pause : t.ctrl_play}
+      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] text-sm font-bold">
+      {loop.playing ? <IconPause size={16}/> : <IconPlay size={16}/>}{loop.playing ? t.ctrl_pause : t.ctrl_play}
+    </button>
+    <button onClick={() => { loop.seek(0); loop.setPlaying(true); }} className="flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-sm hover:bg-slate-100 dark:hover:bg-slate-700">
+      <IconRestart size={16}/>{t.ctrl_restart}
+    </button>
+    <div className="flex items-center gap-1 text-sm" role="group" aria-label={t.ctrl_speed}>
+      <span className="text-slate-500 mr-1">{t.ctrl_speed}</span>
+      {[1, 0.5, 0.25].map(v => (
+        <button key={v} onClick={() => loop.setSpeed(v)} className={`px-2 py-1 rounded-md border text-xs font-bold ${loop.speed === v ? 'bg-[#004030] text-white border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]' : 'border-slate-300 dark:border-slate-600'}`}>{v}×</button>
+      ))}
+    </div>
+    <label className="flex items-center gap-2 text-sm grow min-w-[180px]">
+      <span className="text-slate-500 shrink-0">{t.ctrl_scrub}</span>
+      <input type="range" min="0" max="1000" value={Math.round(loop.u * 1000)} className="w-full"
+        onChange={(e) => { loop.setPlaying(false); loop.seek(+e.target.value / 1000); }}/>
+    </label>
+  </div>
+);
+
+const AnimPlayer = ({ mode, lang, t, partInfo = true }) => {
+  const m = MODES[mode];
+  const loop = useAnimLoop(m.dur || 0, m.kind !== 'static');
+  const [active, setActive] = useState(null);
+  const s = stateFor(mode, loop.u);
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-5 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <PhasePill s={s} t={t} mode={mode}/>
+        <span className="text-xs text-slate-400">{t.anat_hint}</span>
+      </div>
+      <div className="svgwrap overflow-x-auto" onContextMenu={(e) => { e.preventDefault(); window.showCopyrightToast(); }}>
+        <div className="min-w-[320px]"><SwallowSVG mode={mode} u={loop.u} breathU={loop.u} lang={lang} active={active} setActive={setActive}/></div>
+      </div>
+      <div className="flex flex-wrap gap-4 text-xs text-slate-500 mt-1">
+        <span className="flex items-center gap-1"><span className="inline-block w-5 h-0 border-t-[3px] border-dashed" style={{borderColor:'var(--air)'}}></span>{t.legend_air}</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-5 h-0 border-t-[3px] border-dashed" style={{borderColor:'var(--food)'}}></span>{t.legend_food}</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full" style={{background:'var(--naso)',opacity:.6}}></span>{t.legend_naso}</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full" style={{background:'var(--oro)',opacity:.6}}></span>{t.legend_oro}</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full" style={{background:'var(--laryngo)',opacity:.6}}></span>{t.legend_laryngo}</span>
+      </div>
+      {m.kind !== 'static' && <PlayerControls loop={loop} t={t}/>}
+      {partInfo && active && (
+        <div className="mt-4 p-4 rounded-xl bg-[#004030]/5 dark:bg-[#D8C3A5]/10 border-l-4 border-[#D8C3A5] animate-fade-in">
+          <p className="font-serif font-bold text-[#004030] dark:text-[#D8C3A5]">{PART_NAMES[active][0]} · {PART_NAMES[active][1]}</p>
+          <p className="text-base mt-1">{t.part_info[active]}</p>
+        </div>
+      )}
+      <p className="text-xs text-slate-400 mt-3">{t.svg_note}</p>
+    </div>
+  );
+};
+
+/* ===== Bilingual dictionary ===== */
+const dict = {
+  zh: {
+    brand: "SWL",
+    title: "呼吸與吞嚥路徑",
+    subtitle: "中英雙語衛教動畫",
+    nav_modules: "單元目錄", nav_prev: "上一單元", nav_next: "下一單元", nav_home: "首頁",
+    key_terms: "關鍵專有名詞", flip_prompt: "點擊翻轉",
+    flip_status: "已讀 {read} / 已顯示 {shown} / 總計 {total}",
+    flip_next: "下一組", flip_retry: "重新開始",
+    audio_read: "語音導覽", audio_stop: "停止",
+    quiz_title: "單元小測驗",
+    quiz_status: "答對 {correct} / 已答 {answered} / 總計 {total}",
+    quiz_next: "下一組", quiz_retry: "重新測驗",
+    submit: "提交答案", score: "得分", correct: "正確", incorrect: "錯誤", explanation: "解析",
+    overview_label: "Overview 概述", highlights_label: "Highlights 重點",
+    deep_dive_label: "Deep Dive 深入解析", wrapup_label: "Wrap-up 總結", anim_label: "Animation 動畫",
+
+    /* player */
+    phase_rest: "靜止", phase_anatomy: "構造導覽：點選標籤", phase_breath: "呼吸中：空氣進入氣管",
+    phase_oral: "口腔期：舌頭推送食團", phase_pharyngeal: "咽部期：關鼻咽、關氣管、開食道",
+    phase_esophageal: "食道期：蠕動送往胃部", phase_aspiration: "保護太慢：食物進入氣管",
+    phase_cough: "咳嗽反射：把異物咳出",
+    apnea: "呼吸暫停中", cough_alert: "嗆咳！",
+    ctrl_play: "播放", ctrl_pause: "暫停", ctrl_restart: "重播", ctrl_speed: "速度", ctrl_scrub: "逐格",
+    anat_hint: "點選圖上的名稱可標亮構造",
+    legend_air: "空氣路徑", legend_food: "食物路徑", legend_naso: "鼻咽", legend_oro: "口咽", legend_laryngo: "喉咽",
+    svg_note: "原創示意圖，比例經過簡化，僅供衛教說明。",
+    part_info: {
+      nasal: "空氣的主要入口，黏膜與鼻甲能過濾、加溫並加濕空氣。",
+      naso: "位於鼻腔後方的咽部最上段；吞嚥時由軟顎封住。",
+      hard: "口腔頂部前段，有骨頭支撐，是舌頭推送食團時的施力面。",
+      soft: "口腔頂部後段的肌肉組織，吞嚥時上抬貼住咽後壁，避免食物跑進鼻腔。",
+      oro: "位於口腔後方的咽部中段，空氣與食物都會經過這裡。",
+      tongue: "吞嚥的主要推送器，由前往後把食團擠向咽部。",
+      epi: "舌根後方的葉狀軟骨，平時豎起，吞嚥時向後下方翻轉蓋住喉頭入口。",
+      laryngo: "咽部最下段，在此分岔：前方通往氣管，後方通往食道。",
+      vocal: "位於喉頭內，呼吸時打開，吞嚥時閉合，是保護呼吸道的最後一道門。",
+      eso: "位於氣管後方的肌肉管道，以蠕動把食團送到胃。",
+      trachea: "位於頸部前方，把空氣送到肺部；食物進入這裡就是「吸入」。"
+    },
+
+    /* M0 */
+    m0_nav: "0. 執行概要",
+    m0_title: "空氣往前、食物往後",
+    m0_intro: "吞嚥是我們每天重複數百次、卻很少注意的動作。它需要嘴唇、舌頭、軟顎、咽部、喉頭與食道的數十條肌肉，在極短時間內精密協調。更特別的是，人類的呼吸道與消化道在咽部交會：空氣要往前進入氣管，食物要往後進入食道，兩者共用同一段通道。只要協調慢了半拍，食物就可能走錯路，造成嗆咳，甚至引發吸入性肺炎。本教材以原創的頭頸部剖面動畫，帶您一步步看懂呼吸路徑、吞嚥的口腔期、咽部期與食道期，以及食物走錯路時發生了什麼事。每個單元都提供中英雙語語音導覽、可放慢與逐格觀看的動畫、重點學習卡與小測驗，適合病人、家屬、照顧者與醫護相關科系學生使用。",
+    m0_why: "為什麼要了解吞嚥？",
+    m0_why_desc: "吞嚥障礙在中風、帕金森氏症、失智症、頭頸部癌症患者與高齡者中相當常見。及早辨識警訊並接受評估，可以降低嗆咳、營養不良、脫水與吸入性肺炎的風險，也讓用餐重新成為安全又愉快的事。",
+    m0_disclaimer: "本教材僅供衛教學習，不能取代醫師或語言治療師的個別評估。若有吞嚥困難，請盡早就醫。",
+    m0_stats: [
+      { val: "約 1 秒", label: "咽部期所需時間" },
+      { val: "8–20 秒", label: "食道期所需時間" },
+      { val: "3 道門", label: "軟顎、會厭、聲帶" },
+      { val: "4 個分期", label: "口腔準備期到食道期" }
+    ],
+    m0_modules: [
+      { num: "01", title: "構造導覽", desc: "認識鼻腔、咽部三段、會厭、聲帶、氣管與食道的位置。" },
+      { num: "02", title: "呼吸路徑", desc: "空氣如何從鼻腔一路進入氣管。" },
+      { num: "03", title: "口腔期", desc: "咀嚼形成食團，舌頭由前往後推送。" },
+      { num: "04", title: "咽部期", desc: "一秒內關鼻咽、關氣管、開食道。" },
+      { num: "05", title: "食道期", desc: "蠕動把食團送到胃部。" },
+      { num: "06", title: "嗆咳與吸入", desc: "食物走錯路時發生什麼事，以及需要留意的警訊。" }
+    ],
+    m0_start: "開始學習 →",
+
+    /* M1 */
+    m1_nav: "1. 構造導覽", m1_title: "構造導覽",
+    m1_overview: "吞嚥與呼吸共用同一段通道：咽部。認識鼻腔、口腔、咽部、喉部與食道的相對位置，是理解「為什麼會嗆到」的第一步。點選動畫圖右側的名稱，就能在圖上標亮對應構造。",
+    m1_highlights: ["鼻腔與口腔", "硬顎與軟顎", "咽部三段：鼻咽、口咽、喉咽", "會厭與聲帶", "氣管在前、食道在後"],
+    m1_p1: "頭頸部的剖面可以看成兩條路的交會：空氣從鼻腔（或口腔）進入，食物從口腔進入，兩者都要經過咽部。咽部依高度分為三段：位於鼻腔後方的鼻咽、位於口腔後方的口咽，以及位於喉頭後上方的喉咽。過了喉咽之後，道路一分為二：前方是通往肺部的氣管，後方是通往胃部的食道。",
+    m1_p2: "口腔的天花板分成兩部分：前段有骨頭支撐、摸起來硬硬的是硬顎；後段由肌肉構成、可以上下活動的是軟顎，軟顎末端垂下的小肉塊就是懸壅垂。舌根與會厭之間的小凹陷稱為會厭谿，喉咽兩側的凹槽稱為梨狀窩，這兩處是食物最容易殘留的位置。",
+    m1_p3: "會厭是一片位於舌根後方、形狀像葉片的軟骨，平時向上豎起，讓空氣自由進出氣管；吞嚥時它會向後下方翻轉，蓋住喉頭入口。聲帶位於喉頭內，平時打開讓我們呼吸與說話，吞嚥時則緊緊閉合，形成保護呼吸道的最後一道門。氣管在前、食道在後，這個交叉的配置正是吞嚥需要精密協調的原因。",
+    m1_wrapup: "咽部是呼吸與吞嚥的共用路段，氣管位於前方，食道位於後方。軟顎、會厭與聲帶就像三道可以開關的門，決定空氣與食物各自的去向。記住這張路線圖，接下來的單元就能看懂每個動作的目的。",
+    m1_terms: [
+      { front: "硬顎 Hard palate", back: "口腔頂部前段，有骨頭支撐，固定不動。" },
+      { front: "軟顎 Soft palate", back: "口腔頂部後段的肌肉組織，吞嚥時上抬封住鼻咽。" },
+      { front: "會厭 Epiglottis", back: "舌根後方的葉狀軟骨，吞嚥時向後下方翻轉，蓋住喉頭入口。" },
+      { front: "聲帶 Vocal folds", back: "位於喉頭內，呼吸時打開，吞嚥時閉合。" },
+      { front: "會厭谿 Vallecula", back: "舌根與會厭之間的凹陷，容易殘留食物。" },
+      { front: "梨狀窩 Piriform sinus", back: "喉咽兩側的凹槽，食物繞過會厭時會經過這裡。" }
+    ],
+    m1_q: [
+      { q: "氣管與食道的前後位置為何？", opts: ["氣管在前、食道在後", "食道在前、氣管在後", "兩者左右並排", "兩者是同一條管道"], ans: _A0, exp: "氣管位於頸部前方，食道位於氣管後方、緊貼頸椎。" },
+      { q: "下列哪一個構造可以活動，吞嚥時會上抬？", opts: ["硬顎", "軟顎", "頸椎", "鼻中隔"], ans: _A1, exp: "軟顎由肌肉構成，吞嚥時上抬封住鼻咽，避免食物跑進鼻腔。" },
+      { q: "咽部由上到下的正確順序是？", opts: ["口咽、鼻咽、喉咽", "喉咽、口咽、鼻咽", "鼻咽、口咽、喉咽", "鼻咽、喉咽、口咽"], ans: _A2, exp: "鼻咽在鼻腔後方，口咽在口腔後方，喉咽在最下段，接著分岔為氣管與食道。" },
+      { q: "會厭谿與梨狀窩的共同特點是？", opts: ["負責發出聲音", "是空氣進入肺部的主要通道", "位於鼻腔內", "容易殘留食物"], ans: _A3, exp: "這兩處是凹陷的空間，吞嚥力量不足時食物容易殘留，之後可能掉入呼吸道。" }
+    ],
+
+    /* M2 */
+    m2_nav: "2. 呼吸路徑", m2_title: "呼吸路徑",
+    m2_overview: "平常呼吸時，空氣從鼻孔進入鼻腔，經過鼻咽、口咽、喉咽，穿過打開的聲帶進入氣管，再到達肺部。此時軟顎放鬆下垂，會厭豎起，聲帶打開，整條呼吸道保持暢通。",
+    m2_highlights: ["鼻腔過濾、加溫、加濕", "軟顎放鬆，鼻咽暢通", "會厭豎起", "聲帶打開", "食道入口保持關閉"],
+    m2_p1: "鼻腔不只是空氣的入口，它的黏膜與鼻甲能過濾灰塵、加溫並加濕空氣，讓進入肺部的空氣更適合身體使用。空氣通過鼻腔後轉向下方進入鼻咽；此時軟顎放鬆下垂，鼻咽與口咽之間的通道是打開的。",
+    m2_p2: "空氣接著沿著咽部往下，經過口咽與喉咽，從豎起的會厭後方進入喉頭。聲帶在呼吸時向兩側打開，讓空氣進出氣管；說話時，聲帶靠近並振動。因此一邊吃東西一邊說話，等於要求聲帶同時打開與關閉，很容易出錯。",
+    m2_p3: "呼吸時，食道上括約肌（主要由環咽肌構成）維持收縮關閉，避免空氣大量進入食道，也防止胃裡的東西往上逆流。換句話說，在呼吸模式下，身體預設讓氣管打開、食道關閉；只有在吞嚥的瞬間，這個設定才會短暫反轉。",
+    m2_wrapup: "呼吸時的預設狀態是：軟顎下垂、會厭豎起、聲帶打開、食道入口關閉。空氣因此能從鼻腔一路順暢地進入氣管。理解這個預設狀態，就能明白吞嚥時身體需要在不到一秒內完成哪些切換。",
+    m2_terms: [
+      { front: "鼻甲 Nasal conchae", back: "鼻腔側壁的捲曲構造，增加黏膜面積，幫助空氣加溫加濕。" },
+      { front: "喉頭 Larynx", back: "位於氣管上端，內含聲帶，是下呼吸道的入口。" },
+      { front: "食道上括約肌 Upper oesophageal sphincter", back: "食道入口的環狀肌肉，平時關閉，吞嚥時放鬆打開。" },
+      { front: "氣管 Trachea", back: "位於頸部前方的管道，把空氣送進肺部。" }
+    ],
+    m2_q: [
+      { q: "平常呼吸時，聲帶的狀態是？", opts: ["緊緊閉合", "打開", "持續振動", "被會厭蓋住"], ans: _A1, exp: "呼吸時聲帶向兩側打開，讓空氣自由進出氣管。" },
+      { q: "呼吸時，食道上括約肌通常呈現什麼狀態？", opts: ["收縮關閉", "完全放鬆打開", "上下蠕動", "與聲帶一起振動"], ans: _A0, exp: "食道上括約肌平時關閉，只有在吞嚥時才放鬆打開。" },
+      { q: "鼻腔對吸入的空氣有什麼作用？", opts: ["讓空氣變冷變乾", "把空氣送進食道", "過濾、加溫、加濕", "產生聲音"], ans: _A2, exp: "鼻腔黏膜與鼻甲能過濾灰塵，並為空氣加溫加濕。" },
+      { q: "為什麼吃東西時說話比較容易嗆到？", opts: ["說話會讓食道變窄", "說話會讓舌頭變大", "說話會讓軟顎變硬", "說話需要聲帶打開與振動，和吞嚥需要的閉合互相衝突"], ans: _A3, exp: "吞嚥時聲帶必須閉合；說話卻需要氣流通過聲帶，兩者同時進行容易讓食物進入呼吸道。" }
+    ],
+
+    /* M3 */
+    m3_nav: "3. 口腔期", m3_title: "口腔期",
+    m3_overview: "吞嚥從嘴巴開始。口腔準備期把食物咀嚼並與唾液混合成食團；口腔期則由舌頭把食團由前往後推送到咽部。這兩個階段可以由我們自主控制，推送本身大約一秒左右，咀嚼時間則依食物而定。",
+    m3_highlights: ["咀嚼與唾液", "形成食團", "舌頭由前往後推送", "可以自主控制", "嘴唇閉緊"],
+    m3_p1: "口腔準備期：牙齒咀嚼食物，唾液將它濕潤，舌頭與臉頰把食物集中成一團柔軟、容易吞嚥的食團。嘴唇必須閉緊，避免食物或液體從嘴角流出；這時軟顎通常會與舌根靠在一起，暫時把食物留在口腔內。",
+    m3_p2: "口腔期：舌尖頂住上排牙齒後方的硬顎，舌頭像波浪一樣由前往後依序抬起，把食團擠向口腔後方。這個動作就像擠牙膏，舌頭與硬顎之間產生的壓力，是推動食團前進的主要動力。",
+    m3_p3: "當食團被推到舌根、接近口咽時，便會啟動吞嚥反射，進入下一個階段。舌頭力量不足、嘴唇閉合不良或口腔感覺下降的人，常會出現食物殘留在嘴裡、含在口中遲遲吞不下去，或食物提早滑進咽部等情形，這些都會提高嗆咳的風險。",
+    m3_wrapup: "口腔期的重點是把食物準備好、送到對的位置。咀嚼形成食團，嘴唇閉緊，舌頭由前往後推送。這一段可以由意志控制，因此專心進食、小口慢慢吃，是預防嗆咳最簡單也最有效的方法。",
+    m3_terms: [
+      { front: "食團 Bolus", back: "咀嚼並與唾液混合後，準備吞下的一團食物。" },
+      { front: "口腔準備期 Oral preparatory phase", back: "咀嚼並形成食團的階段，可以自主控制。" },
+      { front: "口腔期 Oral phase", back: "舌頭把食團由前往後推送到咽部的階段。" },
+      { front: "吞嚥反射 Swallowing reflex", back: "食團到達咽部時自動觸發的一連串保護與推送動作。" }
+    ],
+    m3_q: [
+      { q: "口腔期推送食團的主要構造是？", opts: ["會厭", "聲帶", "舌頭", "食道"], ans: _A2, exp: "舌頭由前往後抬起，把食團擠向咽部。" },
+      { q: "口腔準備期與口腔期的共同特點是？", opts: ["可以自主控制", "完全由反射控制", "發生在食道內", "需要聲帶振動"], ans: _A0, exp: "這兩個階段都可以由意志控制，咽部期與食道期才是反射。" },
+      { q: "舌頭推送食團的動作，最像下列哪一個比喻？", opts: ["吹氣球", "擠牙膏", "拉窗簾", "搖扇子"], ans: _A1, exp: "舌頭由前往後依序抬起，像擠牙膏一樣把食團往後推。" },
+      { q: "下列哪一項「不是」口腔期問題常見的表現？", opts: ["食物殘留在嘴裡", "含在口中吞不下去", "食物從嘴角流出", "聲帶長繭"], ans: _A3, exp: "聲帶長繭與發聲有關，不屬於口腔期的吞嚥問題。" }
+    ],
+
+    /* M4 */
+    m4_nav: "4. 咽部期", m4_title: "咽部期：三道門",
+    m4_overview: "食團進入咽部後，吞嚥反射啟動，身體在大約一秒內自動完成一連串動作：關上通往鼻子的門、關上通往氣管的門、打開通往食道的門。這是整個吞嚥過程最關鍵、也最容易出錯的階段。",
+    m4_highlights: ["反射動作，不受意志控制", "軟顎上抬封住鼻咽", "喉頭與舌骨上提前移", "會厭翻轉蓋住喉頭", "聲帶閉合、呼吸暫停", "食道上括約肌打開"],
+    m4_p1: "第一道門：軟顎上抬並向後貼住咽後壁，封住鼻咽，這稱為顎咽閉合，可以避免食物或水從鼻子跑出來。同時，咽部肌肉由上往下依序收縮，把食團往下推。",
+    m4_p2: "第二道門：喉頭與舌骨向上、向前移動，讓喉頭躲到舌根下方；會厭隨之向後下方翻轉，蓋住喉頭入口；聲帶則緊緊閉合。呼吸道因此有三層保護：會厭、喉頭入口的皺襞，以及聲帶。這段時間呼吸會短暫停止，稱為吞嚥性呼吸暫停，通常不到一秒。",
+    m4_p3: "第三道門：喉頭上提前移的動作，也會把食道入口拉開，加上食道上括約肌放鬆，食團便能順利進入食道。食團主要從會厭兩側繞過，經過梨狀窩後進入食道。吞完之後，呼吸通常以吐氣重新開始，這個順序也有助於把殘留在喉頭附近的少量食物吹出去。",
+    m4_wrapup: "咽部期在大約一秒內完成三件事：關鼻咽、關氣管、開食道。任何一個動作慢了半拍或力量不足，食物就可能走錯路。動畫可以放慢到 0.25 倍，或用逐格滑桿仔細觀察每一道門的開關順序。",
+    m4_terms: [
+      { front: "顎咽閉合 Velopharyngeal closure", back: "軟顎上抬貼住咽後壁，封住鼻咽。" },
+      { front: "喉頭上提 Laryngeal elevation", back: "喉頭與舌骨向上前方移動，保護呼吸道並拉開食道入口。" },
+      { front: "吞嚥性呼吸暫停 Swallow apnoea", back: "吞嚥時呼吸短暫停止，通常不到一秒。" },
+      { front: "會厭翻轉 Epiglottic inversion", back: "會厭向後下方翻轉，蓋住喉頭入口。" },
+      { front: "環咽肌 Cricopharyngeus", back: "構成食道上括約肌的主要肌肉，吞嚥時放鬆。" }
+    ],
+    m4_q: [
+      { q: "咽部期時，軟顎上抬的主要目的是？", opts: ["封住鼻咽，避免食物跑進鼻腔", "幫助咀嚼", "打開氣管", "讓聲帶振動"], ans: _A0, exp: "顎咽閉合可以避免食物或水從鼻子跑出來。" },
+      { q: "下列哪一項「不是」咽部期保護呼吸道的動作？", opts: ["會厭翻轉", "聲帶閉合", "喉頭上提前移", "食道上括約肌收縮關閉"], ans: _A3, exp: "咽部期時食道上括約肌是放鬆打開的，讓食團進入食道；其他三項都是保護呼吸道的動作。" },
+      { q: "吞嚥性呼吸暫停通常持續多久？", opts: ["約 10 秒", "約 30 秒", "通常不到 1 秒", "約 1 分鐘"], ans: _A2, exp: "呼吸暫停時間很短，通常不到一秒，吞完後便恢復呼吸。" },
+      { q: "吞嚥結束後，呼吸通常以哪一種方式重新開始？", opts: ["吸氣", "吐氣", "打噴嚏", "咳嗽"], ans: _A1, exp: "吞嚥後以吐氣開始，有助於把殘留在喉頭附近的食物吹出去。" }
+    ],
+
+    /* M5 */
+    m5_nav: "5. 食道期", m5_title: "食道期",
+    m5_overview: "食團通過食道上括約肌後，就進入食道期。食道壁的肌肉以蠕動的方式，一波接一波地把食團往下推送到胃。這個階段不受意志控制，大約需要 8 到 20 秒。",
+    m5_highlights: ["蠕動波", "不受意志控制", "約 8–20 秒", "食道上、下括約肌", "喉頭歸位、恢復呼吸"],
+    m5_p1: "食團一進入食道，食道上括約肌立即重新收縮關閉，防止食物逆流回咽部。同時喉頭下降回到原位，會厭重新豎起，聲帶打開，呼吸恢復。也就是說，從這時開始，呼吸與食團的運送已經分開進行。",
+    m5_p2: "食道本身是一條肌肉管道，透過有節奏的收縮與放鬆，形成由上往下傳遞的蠕動波，所以即使躺著，食物也能被送到胃裡。食道下端還有食道下括約肌，食團到達時放鬆打開，之後再關閉，避免胃酸逆流。",
+    m5_p3: "如果蠕動變弱，或括約肌無法正常放鬆，食物可能卡在胸口、吞下後又逆流上來，或出現胸口灼熱感。進食後維持坐姿約 30 分鐘，可以藉由重力幫助食物往下，並減少逆流的機會。",
+    m5_wrapup: "食道期由蠕動完成，不受意志控制，大約需要 8 到 20 秒。此時喉頭已回到原位，呼吸恢復正常。進食後保持上半身直立一段時間，是幫助食道期順利完成的簡單方法。",
+    m5_terms: [
+      { front: "蠕動 Peristalsis", back: "食道肌肉由上往下的波浪狀收縮，推送食團。" },
+      { front: "食道下括約肌 Lower oesophageal sphincter", back: "食道與胃交界處的環狀肌肉，防止胃酸逆流。" },
+      { front: "逆流 Reflux", back: "胃內容物往上回到食道，甚至到達咽部。" },
+      { front: "食道期 Oesophageal phase", back: "食團由食道送到胃的階段，約 8–20 秒。" }
+    ],
+    m5_q: [
+      { q: "食道推送食團主要依靠什麼？", opts: ["只靠重力", "蠕動", "舌頭", "呼吸"], ans: _A1, exp: "食道肌肉的蠕動波把食團往下推，因此躺著也能吞嚥。" },
+      { q: "食道期大約需要多久？", opts: ["不到 1 秒", "約 1 小時", "約 8–20 秒", "約 5 分鐘"], ans: _A2, exp: "食道期通常約 8 到 20 秒。" },
+      { q: "食團進入食道後，食道上括約肌會？", opts: ["重新收縮關閉", "持續打開", "開始振動", "移到胃部"], ans: _A0, exp: "重新關閉可以防止食物逆流回咽部。" },
+      { q: "進食後建議維持坐姿一段時間，主要原因是？", opts: ["幫助聲帶休息", "讓軟顎上抬", "讓會厭變硬", "藉由重力幫助食物往下並減少逆流"], ans: _A3, exp: "直立姿勢可以藉由重力協助食物下行，並減少逆流。" }
+    ],
+
+    /* M6 */
+    m6_nav: "6. 嗆咳與吸入", m6_title: "嗆咳與吸入",
+    m6_overview: "如果保護呼吸道的動作太慢或不完全，食物或液體就可能進入喉頭（滲入），甚至穿過聲帶掉進氣管（吸入）。正常情況下身體會用咳嗽把它咳出來；但有些人沒有咳嗽反應，稱為無聲吸入，風險更高。",
+    m6_highlights: ["滲入與吸入", "咳嗽是保護反射", "無聲吸入", "吸入性肺炎", "警訊徵兆"],
+    m6_p1: "滲入是指食物進入喉頭入口，但仍停留在聲帶上方；吸入則是食物穿過聲帶進入氣管。常見原因包括：吞嚥反射啟動太慢、會厭翻轉或喉頭上提不完全、聲帶閉合不良，或食物殘留在會厭谿與梨狀窩，吞完之後才掉進呼吸道。",
+    m6_p2: "咳嗽是身體把異物排出呼吸道的重要反射。然而中風、帕金森氏症、失智症、頭頸部癌症治療後的病人，或年長、身體虛弱的人，可能咳嗽反射變弱，甚至完全沒有反應。無聲吸入不容易被察覺，食物與口腔細菌反覆進入肺部，可能導致吸入性肺炎。",
+    m6_p3: "需要留意的警訊包括：吃飯或喝水時常常嗆咳、吞完後聲音變得濕濕的或有痰音、食物含在嘴裡、吃一餐的時間明顯變長、體重下降，以及反覆發燒或肺炎。出現這些情形時，請盡早與醫師或語言治療師討論，必要時安排吞嚥評估。",
+    m6_wrapup: "嗆咳代表身體正在保護呼吸道，但沒有咳嗽不一定代表安全。認識滲入、吸入與無聲吸入的差別，留意進食時的警訊，並在專業人員指導下調整姿勢與食物質地，就能降低吸入性肺炎的風險。",
+    m6_terms: [
+      { front: "滲入 Penetration", back: "食物進入喉頭入口，但停留在聲帶上方。" },
+      { front: "吸入 Aspiration", back: "食物或液體穿過聲帶，進入氣管。" },
+      { front: "無聲吸入 Silent aspiration", back: "發生吸入，卻沒有咳嗽等明顯反應。" },
+      { front: "吸入性肺炎 Aspiration pneumonia", back: "食物、液體或口腔細菌進入肺部所引起的感染。" },
+      { front: "語言治療師 Speech-language pathologist", back: "負責評估與治療吞嚥障礙的專業人員。" }
+    ],
+    m6_q: [
+      { q: "「吸入」是指食物到達哪裡？", opts: ["停留在口腔", "穿過聲帶進入氣管", "進入胃部", "停留在會厭谿"], ans: _A1, exp: "穿過聲帶進入氣管稱為吸入；停在聲帶上方稱為滲入。" },
+      { q: "無聲吸入為什麼特別危險？", opts: ["會造成劇烈咳嗽", "會讓食物變硬", "沒有明顯反應，不容易被察覺", "只發生在年輕人身上"], ans: _A2, exp: "沒有咳嗽就不容易發現，食物與細菌可能反覆進入肺部。" },
+      { q: "下列哪一項是吞嚥障礙的警訊？", opts: ["吞完後聲音變得濕濕的", "食慾很好", "吃飯時間很短", "體重穩定"], ans: _A0, exp: "吞完後聲音濕濕的，可能表示有食物或液體停留在喉頭附近。" },
+      { q: "發現家人常在吃飯時嗆咳，最適當的做法是？", opts: ["改成躺著吃", "自行停止所有進食", "加快吃飯速度", "盡早諮詢醫師或語言治療師"], ans: _A3, exp: "專業評估可以找出原因，並給予合適的姿勢與食物質地建議。" }
+    ],
+
+    /* Lab */
+    mlab_nav: "7. 互動實驗室", mlab_title: "互動實驗室",
+    mlab_desc: "透過四個互動活動，把前面學到的內容串起來：完整播放一次吞嚥、比較正常與吸入、排列動作順序，並檢視自己的進食習慣。",
+    mlab_labs: [
+      { title: "完整吞嚥播放器", desc: "從口腔期到食道期完整播放。可以放慢速度，也可以拖曳逐格滑桿停在任何一個瞬間。" },
+      { title: "對照：正常吞嚥與吸入", desc: "左右同步播放。觀察右側會厭與聲帶關閉得太晚時，食物如何掉進氣管，以及咳嗽反射如何反應。" },
+      { title: "排序挑戰", desc: "依照發生的先後順序，點選下面的吞嚥動作。" },
+      { title: "安全進食自我檢核", desc: "針對每一個習慣回答是或否，看看哪些地方可以再加強。" }
+    ],
+    cmp_normal: "正常吞嚥", cmp_asp: "保護太慢：吸入",
+    lab_order_items: ["咀嚼食物，形成食團", "舌頭把食團往後推", "軟顎上抬，封住鼻咽", "喉頭上提、會厭翻轉、聲帶閉合", "食道上括約肌打開，食團進入食道", "食道蠕動，把食團送到胃"],
+    lab_order_hint: "依序點選，點錯可以按重來。",
+    lab_order_reset: "重來", lab_order_check: "檢查答案",
+    lab_order_ok: "完全正確！這就是吞嚥的標準順序。",
+    lab_order_bad: "順序還不對，標示紅色的位置需要調整。",
+    lab_order_your: "你的順序",
+    lab_check_items: ["進食時坐直，身體約呈 90 度", "小口進食，一口吞完再吃下一口", "吃飯時不說話，也不邊看電視邊吃", "吃完後維持坐姿約 30 分鐘", "飯後清潔口腔與假牙", "依照專業人員建議調整食物質地與液體稠度"],
+    lab_yes: "是", lab_no: "否",
+    lab_check_result: "已做到 {n} / {total} 項",
+    lab_check_good: "很好！請繼續維持這些習慣。",
+    lab_check_mid: "已經有不錯的基礎，可以從回答「否」的項目開始調整。",
+    lab_check_low: "建議從回答「否」的項目逐一改善；若常常嗆咳，請諮詢醫師或語言治療師。",
+    lab_check_note: "提醒：低頭吞嚥（下巴微收）等代償姿勢，應由語言治療師評估後再使用。",
+
+    /* Resources */
+    mres_nav: "8. 外部學習資源", mres_title: "外部學習資源",
+    mres_desc: "以下是可信的外部資源（多為英文），可以延伸閱讀。在台灣，若有吞嚥困難，可以到醫院復健科或耳鼻喉科就診，由語言治療師進行吞嚥評估。",
+    mres_groups: [
+      { title: "認識吞嚥障礙", links: [
+        { label: "NIDCD: Dysphagia", url: "https://www.nidcd.nih.gov/health/dysphagia", desc: "美國國家耳聾及其他溝通障礙研究所的吞嚥障礙介紹。" },
+        { label: "MedlinePlus: Swallowing Disorders", url: "https://medlineplus.gov/swallowingdisorders.html", desc: "美國國家醫學圖書館的民眾版健康資訊入口。" },
+        { label: "ASHA: Adult Dysphagia", url: "https://www.asha.org/public/speech/swallowing/adult-dysphagia/", desc: "美國聽語學會說明成人吞嚥障礙的徵兆與評估。" }
+      ]},
+      { title: "食物質地與照護", links: [
+        { label: "IDDSI", url: "https://iddsi.org/", desc: "國際吞嚥障礙飲食標準：食物質地與液體稠度的分級架構。" },
+        { label: "Mayo Clinic: Dysphagia", url: "https://www.mayoclinic.org/diseases-conditions/dysphagia/symptoms-causes/syc-20372028", desc: "症狀、原因與何時需要就醫。" }
+      ]}
+    ],
+
+    /* Analytics */
+    analytics_nav: "9. 學習歷程分析", analytics_title: "學習歷程分析",
+    analytics_desc: "系統會在本機記錄各單元的停留時間、點擊次數、學習卡與測驗結果，協助您找出需要複習的單元。",
+    analytics_form_title: "基本資料（匯出用）",
+    analytics_group: "組別", analytics_group_select: "請選擇", analytics_dept: "系級", analytics_dept_ph: "例：IBS3",
+    analytics_id: "學號", analytics_id_ph: "例：113212599",
+    analytics_name_en: "英文姓名", analytics_name_en_ph: "例：Shihmin Lo",
+    analytics_name_zh: "中文姓名", analytics_name_zh_ph: "例：王阿吉",
+    analytics_export_csv: "匯出 CSV 歷程記錄", analytics_fill_required: "請填寫完整資訊以解鎖匯出",
+    analytics_refresh_prompt: "教材已更新，是否清除舊的學習紀錄並重新開始？",
+    group_options: ["G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12","Others"],
+    analytics_total_time: "總學習時間", analytics_total_clicks: "總互動點擊", analytics_overall_acc: "總體測驗答對率", analytics_card_usage: "學習卡使用率",
+    analytics_module: "單元", analytics_time: "停留時間", analytics_clicks: "點擊次數", analytics_acc: "答對率",
+    analytics_correct_ans_total: "答對 / 總題數", analytics_cards_read_total: "已讀 / 總卡數",
+    analytics_no_data: "尚未測驗", analytics_sec: "秒", analytics_times: "次",
+    analytics_progress_title: "整體學習進度", analytics_progress_visited: "已瀏覽", analytics_progress_not_visited: "未瀏覽", analytics_progress_quiz_done: "已測驗",
+    analytics_wp_title: "弱點分析與複習建議", analytics_wp_incorrect: "答錯題目：", analytics_wp_goto: "→ 前往複習此單元",
+    analytics_wp_allpass: "所有已測驗單元答對率均達 75% 以上，表現優異！",
+    analytics_wp_none: "完成單元小測驗後，這裡會顯示建議。",
+    analytics_wp_saved: "💾 學習歷程已自動儲存於本機瀏覽器", analytics_wp_clear: "🗑 清除歷程",
+    analytics_wp_clear_confirm: "確定要清除所有學習歷程資料嗎？此操作無法復原。",
+    analytics_wp_tts_intro: "以下是您的弱點分析。", analytics_wp_tts_module: "單元：{name}，答對率 {acc}%，建議複習。",
+    analytics_wp_tts_allpass: "恭喜！所有已測驗單元答對率均達 75% 以上。",
+
+    date: "Version 2026.10.23", copyright: "For Educational Use Only",
+    architect_label: "Architect:", architect_name: "Prof. Shihmin Lo",
+    architect_url: "https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo"
+  },
+
+  en: {
+    brand: "SWL",
+    title: "Breathing & Swallowing Pathways",
+    subtitle: "A bilingual animated guide",
+    nav_modules: "Contents", nav_prev: "Previous", nav_next: "Next", nav_home: "Home",
+    key_terms: "Key Terms", flip_prompt: "Tap to flip",
+    flip_status: "Read {read} / Shown {shown} / Total {total}",
+    flip_next: "Next", flip_retry: "Restart",
+    audio_read: "Narration", audio_stop: "Stop",
+    quiz_title: "Unit Check",
+    quiz_status: "Correct {correct} / Answered {answered} / Total {total}",
+    quiz_next: "Next", quiz_retry: "Retry",
+    submit: "Submit", score: "Score", correct: "Correct", incorrect: "Incorrect", explanation: "Explanation",
+    overview_label: "Overview", highlights_label: "Highlights",
+    deep_dive_label: "Deep Dive", wrapup_label: "Wrap-up", anim_label: "Animation",
+
+    phase_rest: "At rest", phase_anatomy: "Anatomy tour: tap a label", phase_breath: "Breathing: air flows into the trachea",
+    phase_oral: "Oral phase: the tongue pushes the bolus back", phase_pharyngeal: "Pharyngeal phase: close the nose, close the airway, open the oesophagus",
+    phase_esophageal: "Oesophageal phase: peristalsis carries the bolus down", phase_aspiration: "Protection too late: food enters the trachea",
+    phase_cough: "Cough reflex: clearing the airway",
+    apnea: "Breathing paused", cough_alert: "Cough!",
+    ctrl_play: "Play", ctrl_pause: "Pause", ctrl_restart: "Replay", ctrl_speed: "Speed", ctrl_scrub: "Step",
+    anat_hint: "Tap a name on the diagram to highlight it",
+    legend_air: "Air path", legend_food: "Food path", legend_naso: "Nasopharynx", legend_oro: "Oropharynx", legend_laryngo: "Laryngopharynx",
+    svg_note: "Original schematic with simplified proportions, for health education only.",
+    part_info: {
+      nasal: "The main entrance for air. Its lining and turbinates filter, warm and humidify the air.",
+      naso: "The top section of the pharynx, behind the nose. The soft palate seals it during swallowing.",
+      hard: "The bony front part of the roof of the mouth. The tongue presses against it to push food back.",
+      soft: "The muscular back part of the roof of the mouth. It lifts against the back of the throat so food cannot enter the nose.",
+      oro: "The middle section of the pharynx, behind the mouth. Both air and food pass through here.",
+      tongue: "The main pump of swallowing. It squeezes the bolus from front to back towards the pharynx.",
+      epi: "A leaf-shaped cartilage behind the tongue base. It stands upright for breathing and tips back to cover the larynx during swallowing.",
+      laryngo: "The lowest section of the pharynx, where the road splits: the trachea in front and the oesophagus behind.",
+      vocal: "Inside the larynx. They open for breathing and close tightly during swallowing, the last gate protecting the airway.",
+      eso: "A muscular tube behind the trachea that carries food to the stomach by peristalsis.",
+      trachea: "The windpipe at the front of the neck, carrying air to the lungs. Food entering it is called aspiration."
+    },
+
+    m0_nav: "0. Executive Summary",
+    m0_title: "Air Goes Forward, Food Goes Back",
+    m0_intro: "Swallowing is something we do hundreds of times a day without thinking, yet it needs dozens of muscles in the lips, tongue, soft palate, pharynx, larynx and oesophagus to work together within a fraction of a second. What makes it remarkable is that the airway and the food passage cross in the pharynx. Air must travel forward into the trachea, while food must travel backward into the oesophagus, and both share the same stretch of throat. If the timing slips, food can go down the wrong way, causing choking or coughing and sometimes aspiration pneumonia. This guide uses an original animated cross-section of the head and neck to walk you through the breathing pathway, the oral, pharyngeal and oesophageal phases of swallowing, and what happens when food enters the airway. Every unit includes bilingual narration, animation you can slow down or step through, flashcards and a short quiz. It is written for patients, families, caregivers and health-science students.",
+    m0_why: "Why learn about swallowing?",
+    m0_why_desc: "Swallowing difficulty (dysphagia) is common after stroke and in Parkinson's disease, dementia, head and neck cancer, and older age. Spotting the warning signs early and getting assessed lowers the risk of choking, malnutrition, dehydration and aspiration pneumonia, and helps mealtimes feel safe and enjoyable again.",
+    m0_disclaimer: "This guide is for health education only and does not replace an individual assessment by a doctor or speech-language pathologist. If you have trouble swallowing, please seek medical advice early.",
+    m0_stats: [
+      { val: "~1 s", label: "Pharyngeal phase" },
+      { val: "8–20 s", label: "Oesophageal phase" },
+      { val: "3 gates", label: "Soft palate, epiglottis, vocal folds" },
+      { val: "4 phases", label: "Oral preparatory to oesophageal" }
+    ],
+    m0_modules: [
+      { num: "01", title: "Anatomy Tour", desc: "Locate the nasal cavity, the three parts of the pharynx, the epiglottis, vocal folds, trachea and oesophagus." },
+      { num: "02", title: "Breathing Pathway", desc: "How air travels from the nose into the trachea." },
+      { num: "03", title: "Oral Phase", desc: "Chewing forms a bolus; the tongue pushes it from front to back." },
+      { num: "04", title: "Pharyngeal Phase", desc: "In about one second: close the nose, close the airway, open the oesophagus." },
+      { num: "05", title: "Oesophageal Phase", desc: "Peristalsis carries the bolus to the stomach." },
+      { num: "06", title: "Coughing & Aspiration", desc: "What happens when food goes the wrong way, and the warning signs to watch for." }
+    ],
+    m0_start: "Start learning →",
+
+    m1_nav: "1. Anatomy Tour", m1_title: "Anatomy Tour",
+    m1_overview: "Swallowing and breathing share one passage: the pharynx. Knowing where the nose, mouth, pharynx, larynx and oesophagus sit in relation to each other is the first step to understanding why we choke. Tap any name on the right of the diagram to highlight that structure.",
+    m1_highlights: ["Nasal and oral cavities", "Hard and soft palate", "Three parts of the pharynx", "Epiglottis and vocal folds", "Trachea in front, oesophagus behind"],
+    m1_p1: "A cross-section of the head and neck shows two roads meeting. Air enters through the nose (or mouth), food enters through the mouth, and both must pass through the pharynx. The pharynx has three sections by height: the nasopharynx behind the nose, the oropharynx behind the mouth, and the laryngopharynx above and behind the larynx. Below that, the road splits in two: the trachea in front leads to the lungs, and the oesophagus behind leads to the stomach.",
+    m1_p2: "The roof of the mouth has two parts. The front part, supported by bone, is the hard palate. The back part, made of muscle and able to move, is the soft palate, ending in the small hanging uvula. The small pocket between the tongue base and the epiglottis is the vallecula, and the channels on either side of the laryngopharynx are the piriform sinuses. These are the places where food residue most often collects.",
+    m1_p3: "The epiglottis is a leaf-shaped cartilage behind the tongue base. It normally stands upright so air can move freely in and out of the trachea; during a swallow it tips backward and down to cover the entrance of the larynx. The vocal folds sit inside the larynx. They open for breathing and speaking and close tightly during swallowing, forming the last gate that protects the airway. Because the trachea lies in front and the oesophagus behind, the two paths cross, and that is why swallowing needs such precise timing.",
+    m1_wrapup: "The pharynx is shared by breathing and swallowing, with the trachea in front and the oesophagus behind. The soft palate, epiglottis and vocal folds act like three gates that decide where air and food go. Keep this route map in mind and every movement in the next units will make sense.",
+    m1_terms: [
+      { front: "硬顎 Hard palate", back: "The bony front part of the roof of the mouth. It does not move." },
+      { front: "軟顎 Soft palate", back: "The muscular back part of the roof of the mouth. It lifts to seal the nasopharynx during swallowing." },
+      { front: "會厭 Epiglottis", back: "A leaf-shaped cartilage behind the tongue base that tips back to cover the larynx during swallowing." },
+      { front: "聲帶 Vocal folds", back: "Inside the larynx; open for breathing, closed during swallowing." },
+      { front: "會厭谿 Vallecula", back: "The pocket between the tongue base and the epiglottis, where food often lingers." },
+      { front: "梨狀窩 Piriform sinus", back: "Channels on each side of the laryngopharynx that food passes through around the epiglottis." }
+    ],
+    m1_q: [
+      { q: "How are the trachea and oesophagus arranged?", opts: ["Trachea in front, oesophagus behind", "Oesophagus in front, trachea behind", "Side by side, left and right", "They are the same tube"], ans: _A0, exp: "The trachea lies at the front of the neck; the oesophagus sits behind it, against the spine." },
+      { q: "Which structure can move and lifts during swallowing?", opts: ["Hard palate", "Soft palate", "Cervical spine", "Nasal septum"], ans: _A1, exp: "The soft palate is muscular. It lifts to seal the nasopharynx so food does not enter the nose." },
+      { q: "What is the correct order of the pharynx from top to bottom?", opts: ["Oropharynx, nasopharynx, laryngopharynx", "Laryngopharynx, oropharynx, nasopharynx", "Nasopharynx, oropharynx, laryngopharynx", "Nasopharynx, laryngopharynx, oropharynx"], ans: _A2, exp: "The nasopharynx is behind the nose, the oropharynx behind the mouth, and the laryngopharynx is lowest, just above the split into trachea and oesophagus." },
+      { q: "What do the vallecula and piriform sinuses have in common?", opts: ["They produce the voice", "They are the main air route to the lungs", "They are inside the nasal cavity", "Food residue tends to collect there"], ans: _A3, exp: "Both are pockets where food can linger when the swallow is weak, and may later fall into the airway." }
+    ],
+
+    m2_nav: "2. Breathing Pathway", m2_title: "Breathing Pathway",
+    m2_overview: "During normal breathing, air enters the nostrils, passes through the nasal cavity, nasopharynx, oropharynx and laryngopharynx, goes through the open vocal folds into the trachea and on to the lungs. The soft palate hangs relaxed, the epiglottis stands upright and the vocal folds are open, so the whole airway is clear.",
+    m2_highlights: ["The nose filters, warms and humidifies", "Soft palate relaxed, nasopharynx open", "Epiglottis upright", "Vocal folds open", "Oesophageal entrance closed"],
+    m2_p1: "The nose is more than an entrance. Its lining and turbinates trap dust and warm and humidify the air so that it suits the lungs better. After the nasal cavity, air turns downward into the nasopharynx. At this moment the soft palate hangs relaxed, so the passage between the nasopharynx and oropharynx is open.",
+    m2_p2: "Air then travels down the pharynx, through the oropharynx and laryngopharynx, and enters the larynx behind the upright epiglottis. The vocal folds move apart during breathing to let air in and out of the trachea; when we speak, they come together and vibrate. Talking while eating therefore asks the vocal folds to be open and closed at the same time, which invites mistakes.",
+    m2_p3: "While we breathe, the upper oesophageal sphincter, formed mainly by the cricopharyngeus muscle, stays contracted and closed. This keeps large amounts of air out of the oesophagus and stops stomach contents from flowing back up. In breathing mode, the body's default is airway open and oesophagus closed; only for the instant of a swallow is that setting briefly reversed.",
+    m2_wrapup: "The default breathing setting is: soft palate down, epiglottis up, vocal folds open, oesophageal entrance closed. Air can therefore flow smoothly from the nose into the trachea. Understanding this default makes clear how many switches the body must make in under a second when we swallow.",
+    m2_terms: [
+      { front: "鼻甲 Nasal conchae", back: "Curled shelves on the side walls of the nose that enlarge the lining to warm and humidify air." },
+      { front: "喉頭 Larynx", back: "At the top of the trachea, containing the vocal folds; the entrance to the lower airway." },
+      { front: "食道上括約肌 Upper oesophageal sphincter", back: "A ring of muscle at the top of the oesophagus, closed at rest and relaxed during swallowing." },
+      { front: "氣管 Trachea", back: "The tube at the front of the neck that carries air into the lungs." }
+    ],
+    m2_q: [
+      { q: "What are the vocal folds doing during normal breathing?", opts: ["Tightly closed", "Open", "Constantly vibrating", "Covered by the epiglottis"], ans: _A1, exp: "During breathing the vocal folds move apart so air can flow freely in and out of the trachea." },
+      { q: "What is the upper oesophageal sphincter usually doing while we breathe?", opts: ["Contracted and closed", "Fully relaxed and open", "Moving in waves", "Vibrating with the vocal folds"], ans: _A0, exp: "It stays closed at rest and only relaxes to open during a swallow." },
+      { q: "What does the nose do to the air we breathe in?", opts: ["Makes it colder and drier", "Sends it into the oesophagus", "Filters, warms and humidifies it", "Produces sound"], ans: _A2, exp: "The nasal lining and turbinates trap dust and warm and humidify the air." },
+      { q: "Why is talking while eating more likely to cause choking?", opts: ["Talking narrows the oesophagus", "Talking makes the tongue swell", "Talking stiffens the soft palate", "Talking needs open, vibrating vocal folds, which conflicts with the closure swallowing needs"], ans: _A3, exp: "The vocal folds must close to swallow, but speech needs air to pass through them. Doing both at once lets food slip into the airway." }
+    ],
+
+    m3_nav: "3. Oral Phase", m3_title: "Oral Phase",
+    m3_overview: "Swallowing starts in the mouth. In the oral preparatory phase, food is chewed and mixed with saliva into a bolus; in the oral phase, the tongue pushes the bolus from front to back towards the pharynx. Both stages are under voluntary control. The push itself takes about a second, while chewing time depends on the food.",
+    m3_highlights: ["Chewing and saliva", "Forming a bolus", "Tongue pushes front to back", "Voluntary control", "Lips sealed"],
+    m3_p1: "Oral preparatory phase: the teeth chew the food, saliva moistens it, and the tongue and cheeks gather it into a soft, easy-to-swallow bolus. The lips must stay closed so food and liquid do not leak from the corners of the mouth. The soft palate usually rests against the back of the tongue at this stage, holding the food in the mouth for now.",
+    m3_p2: "Oral phase: the tongue tip presses against the hard palate behind the upper teeth, then the tongue rises in a wave from front to back, squeezing the bolus towards the back of the mouth. It works like squeezing a tube of toothpaste: the pressure between the tongue and the hard palate is the main force that moves the bolus.",
+    m3_p3: "When the bolus reaches the tongue base and approaches the oropharynx, the swallowing reflex fires and the next phase begins. People with a weak tongue, poor lip closure or reduced sensation in the mouth may have food left in the mouth, hold food without swallowing it, or let food slip into the pharynx too early. Each of these raises the risk of choking.",
+    m3_wrapup: "The oral phase is about getting the food ready and into the right place. Chewing forms the bolus, the lips stay sealed, and the tongue pushes from front to back. Because this stage is voluntary, paying attention while eating and taking small, slow mouthfuls is the simplest and most effective way to prevent choking.",
+    m3_terms: [
+      { front: "食團 Bolus", back: "A chewed lump of food mixed with saliva, ready to be swallowed." },
+      { front: "口腔準備期 Oral preparatory phase", back: "Chewing and forming the bolus; under voluntary control." },
+      { front: "口腔期 Oral phase", back: "The tongue pushes the bolus from front to back into the pharynx." },
+      { front: "吞嚥反射 Swallowing reflex", back: "The automatic chain of protective and propulsive movements triggered when the bolus reaches the pharynx." }
+    ],
+    m3_q: [
+      { q: "Which structure mainly pushes the bolus in the oral phase?", opts: ["Epiglottis", "Vocal folds", "Tongue", "Oesophagus"], ans: _A2, exp: "The tongue rises from front to back and squeezes the bolus towards the pharynx." },
+      { q: "What do the oral preparatory and oral phases have in common?", opts: ["They are under voluntary control", "They are purely reflexive", "They happen inside the oesophagus", "They need the vocal folds to vibrate"], ans: _A0, exp: "Both can be controlled at will; the pharyngeal and oesophageal phases are reflexive." },
+      { q: "Which comparison best describes how the tongue moves the bolus?", opts: ["Blowing up a balloon", "Squeezing a tube of toothpaste", "Drawing a curtain", "Waving a fan"], ans: _A1, exp: "The tongue rises in sequence from front to back, like squeezing toothpaste." },
+      { q: "Which is NOT a typical sign of an oral-phase problem?", opts: ["Food left in the mouth", "Holding food without swallowing", "Food leaking from the lips", "Vocal fold nodules"], ans: _A3, exp: "Vocal fold nodules relate to voice use, not to the oral phase of swallowing." }
+    ],
+
+    m4_nav: "4. Pharyngeal Phase", m4_title: "Pharyngeal Phase: Three Gates",
+    m4_overview: "Once the bolus enters the pharynx, the swallowing reflex takes over and, in about one second, the body automatically closes the gate to the nose, closes the gate to the airway and opens the gate to the oesophagus. This is the most critical phase of swallowing and the one most likely to go wrong.",
+    m4_highlights: ["Reflexive, not voluntary", "Soft palate seals the nasopharynx", "Larynx and hyoid move up and forward", "Epiglottis tips over the larynx", "Vocal folds close, breathing pauses", "Upper oesophageal sphincter opens"],
+    m4_p1: "Gate one: the soft palate lifts and presses back against the pharyngeal wall, sealing the nasopharynx. This velopharyngeal closure stops food or water from coming out of the nose. At the same time, the pharyngeal muscles contract in sequence from top to bottom, squeezing the bolus downward.",
+    m4_p2: "Gate two: the larynx and hyoid bone move up and forward, tucking the larynx under the tongue base. The epiglottis tips backward and down to cover the laryngeal entrance, and the vocal folds close tightly. The airway is therefore protected in three layers: the epiglottis, the folds at the laryngeal entrance, and the vocal folds. Breathing stops briefly during this time, a pause called swallow apnoea that usually lasts less than a second.",
+    m4_p3: "Gate three: the upward and forward movement of the larynx also pulls the oesophageal entrance open, and with the upper oesophageal sphincter relaxed, the bolus passes into the oesophagus. Most of the bolus flows around the sides of the epiglottis and through the piriform sinuses. After the swallow, breathing usually restarts with an out-breath, which helps blow away small amounts of food left near the larynx.",
+    m4_wrapup: "In about one second the pharyngeal phase does three things: close the nose, close the airway, open the oesophagus. If any movement is late or weak, food can go the wrong way. Slow the animation to 0.25× or drag the step slider to watch each gate open and close in order.",
+    m4_terms: [
+      { front: "顎咽閉合 Velopharyngeal closure", back: "The soft palate lifts against the back wall of the pharynx to seal the nasopharynx." },
+      { front: "喉頭上提 Laryngeal elevation", back: "The larynx and hyoid move up and forward, protecting the airway and pulling the oesophagus open." },
+      { front: "吞嚥性呼吸暫停 Swallow apnoea", back: "A brief pause in breathing during the swallow, usually under one second." },
+      { front: "會厭翻轉 Epiglottic inversion", back: "The epiglottis tips backward and down to cover the laryngeal entrance." },
+      { front: "環咽肌 Cricopharyngeus", back: "The main muscle of the upper oesophageal sphincter; it relaxes during swallowing." }
+    ],
+    m4_q: [
+      { q: "Why does the soft palate lift in the pharyngeal phase?", opts: ["To seal the nasopharynx so food cannot enter the nose", "To help chewing", "To open the trachea", "To make the vocal folds vibrate"], ans: _A0, exp: "Velopharyngeal closure stops food or water from coming out of the nose." },
+      { q: "Which is NOT an airway-protecting movement in the pharyngeal phase?", opts: ["Epiglottis tips over", "Vocal folds close", "Larynx moves up and forward", "Upper oesophageal sphincter contracts shut"], ans: _A3, exp: "During the pharyngeal phase the upper oesophageal sphincter relaxes and opens to let the bolus in; the other three protect the airway." },
+      { q: "How long does swallow apnoea usually last?", opts: ["About 10 seconds", "About 30 seconds", "Usually under 1 second", "About 1 minute"], ans: _A2, exp: "The pause is very short, usually under a second, and breathing resumes once the swallow is complete." },
+      { q: "How does breathing usually restart after a swallow?", opts: ["With an in-breath", "With an out-breath", "With a sneeze", "With a cough"], ans: _A1, exp: "Restarting with an out-breath helps blow away food left near the larynx." }
+    ],
+
+    m5_nav: "5. Oesophageal Phase", m5_title: "Oesophageal Phase",
+    m5_overview: "Once the bolus passes the upper oesophageal sphincter, the oesophageal phase begins. The muscles of the oesophageal wall move the bolus down to the stomach in waves called peristalsis. This phase is involuntary and takes about 8 to 20 seconds.",
+    m5_highlights: ["Peristaltic waves", "Involuntary", "About 8–20 seconds", "Upper and lower sphincters", "Larynx returns, breathing resumes"],
+    m5_p1: "As soon as the bolus enters the oesophagus, the upper oesophageal sphincter contracts and closes again to stop food flowing back into the pharynx. The larynx drops back into place, the epiglottis stands up again, the vocal folds open and breathing resumes. From this point on, breathing and the transport of food run separately.",
+    m5_p2: "The oesophagus is a muscular tube. Rhythmic contraction and relaxation create a wave that travels from top to bottom, so food reaches the stomach even when we are lying down. At the lower end, the lower oesophageal sphincter relaxes to let the bolus through and then closes again to keep stomach acid from flowing back.",
+    m5_p3: "If peristalsis weakens or a sphincter fails to relax properly, food may feel stuck in the chest, come back up after swallowing, or cause heartburn. Staying seated upright for about 30 minutes after a meal lets gravity help food move down and reduces the chance of reflux.",
+    m5_wrapup: "The oesophageal phase is driven by peristalsis, is involuntary and takes about 8 to 20 seconds. By now the larynx is back in place and breathing is normal. Keeping the upper body upright for a while after eating is a simple way to help this phase finish smoothly.",
+    m5_terms: [
+      { front: "蠕動 Peristalsis", back: "Wave-like contractions of the oesophagus, from top to bottom, that move the bolus." },
+      { front: "食道下括約肌 Lower oesophageal sphincter", back: "A ring of muscle where the oesophagus meets the stomach; it prevents acid reflux." },
+      { front: "逆流 Reflux", back: "Stomach contents flowing back up into the oesophagus, sometimes as far as the pharynx." },
+      { front: "食道期 Oesophageal phase", back: "The stage that carries the bolus from the oesophagus to the stomach, about 8–20 seconds." }
+    ],
+    m5_q: [
+      { q: "What mainly moves the bolus down the oesophagus?", opts: ["Gravity alone", "Peristalsis", "The tongue", "Breathing"], ans: _A1, exp: "Peristaltic waves push the bolus down, which is why we can swallow even lying down." },
+      { q: "How long does the oesophageal phase usually take?", opts: ["Under 1 second", "About 1 hour", "About 8–20 seconds", "About 5 minutes"], ans: _A2, exp: "The oesophageal phase usually takes about 8 to 20 seconds." },
+      { q: "After the bolus enters the oesophagus, the upper oesophageal sphincter...", opts: ["contracts and closes again", "stays open", "starts vibrating", "moves to the stomach"], ans: _A0, exp: "Closing again stops food from flowing back into the pharynx." },
+      { q: "Why is sitting upright after a meal recommended?", opts: ["To rest the vocal folds", "To lift the soft palate", "To stiffen the epiglottis", "Gravity helps food move down and reduces reflux"], ans: _A3, exp: "An upright position lets gravity assist the bolus and lowers the chance of reflux." }
+    ],
+
+    m6_nav: "6. Coughing & Aspiration", m6_title: "Coughing & Aspiration",
+    m6_overview: "If the airway-protecting movements are too slow or incomplete, food or liquid can enter the larynx (penetration) or even pass the vocal folds into the trachea (aspiration). Normally the body coughs it back out, but some people do not cough at all. This is called silent aspiration, and it carries a higher risk.",
+    m6_highlights: ["Penetration vs aspiration", "Coughing is a protective reflex", "Silent aspiration", "Aspiration pneumonia", "Warning signs"],
+    m6_p1: "Penetration means food enters the laryngeal entrance but stays above the vocal folds; aspiration means it passes the vocal folds into the trachea. Common causes include a delayed swallowing reflex, incomplete tipping of the epiglottis or lifting of the larynx, poor vocal fold closure, and food left in the vallecula and piriform sinuses that falls into the airway after the swallow.",
+    m6_p2: "Coughing is the body's key reflex for clearing the airway. However, after a stroke, in Parkinson's disease or dementia, after treatment for head and neck cancer, or in older and frail people, the cough reflex may be weak or absent. Silent aspiration is hard to notice. Food and mouth bacteria can repeatedly reach the lungs and may cause aspiration pneumonia.",
+    m6_p3: "Warning signs include frequent coughing or choking while eating or drinking, a wet or gurgly voice after swallowing, food held in the mouth, meals taking much longer than before, weight loss, and repeated fevers or chest infections. If you notice these, talk to a doctor or speech-language pathologist early and ask about a swallowing assessment.",
+    m6_wrapup: "Coughing shows the body is protecting the airway, but no cough does not always mean safe. Knowing the difference between penetration, aspiration and silent aspiration, watching for warning signs at mealtimes, and adjusting posture and food texture with professional guidance all help lower the risk of aspiration pneumonia.",
+    m6_terms: [
+      { front: "滲入 Penetration", back: "Food enters the laryngeal entrance but stays above the vocal folds." },
+      { front: "吸入 Aspiration", back: "Food or liquid passes the vocal folds into the trachea." },
+      { front: "無聲吸入 Silent aspiration", back: "Aspiration without coughing or other obvious signs." },
+      { front: "吸入性肺炎 Aspiration pneumonia", back: "A lung infection caused by food, liquid or mouth bacteria entering the lungs." },
+      { front: "語言治療師 Speech-language pathologist", back: "The professional who assesses and treats swallowing disorders." }
+    ],
+    m6_q: [
+      { q: "In aspiration, where does the food go?", opts: ["It stays in the mouth", "It passes the vocal folds into the trachea", "It enters the stomach", "It stays in the vallecula"], ans: _A1, exp: "Passing the vocal folds into the trachea is aspiration; stopping above them is penetration." },
+      { q: "Why is silent aspiration especially dangerous?", opts: ["It causes violent coughing", "It makes food harder", "There are no obvious signs, so it is easily missed", "It only affects young people"], ans: _A2, exp: "Without a cough it goes unnoticed, so food and bacteria may reach the lungs again and again." },
+      { q: "Which of these is a warning sign of a swallowing problem?", opts: ["A wet, gurgly voice after swallowing", "A good appetite", "Very short mealtimes", "Stable weight"], ans: _A0, exp: "A wet voice after swallowing can mean food or liquid is sitting near the larynx." },
+      { q: "A family member often coughs at meals. What is the best response?", opts: ["Have them eat lying down", "Stop all eating without advice", "Eat faster", "Consult a doctor or speech-language pathologist early"], ans: _A3, exp: "A professional assessment can find the cause and recommend suitable posture and food textures." }
+    ],
+
+    mlab_nav: "7. Interactive Lab", mlab_title: "Interactive Lab",
+    mlab_desc: "Four activities bring the units together: play a complete swallow, compare a normal swallow with aspiration, put the events in order, and check your own eating habits.",
+    mlab_labs: [
+      { title: "Full Swallow Player", desc: "Plays the whole swallow from the oral to the oesophageal phase. Slow it down, or drag the step slider to stop at any instant." },
+      { title: "Compare: Normal Swallow vs Aspiration", desc: "Both sides play in sync. Watch how food falls into the trachea on the right when the epiglottis and vocal folds close too late, and how the cough reflex responds." },
+      { title: "Sequence Challenge", desc: "Tap the swallowing events below in the order they happen." },
+      { title: "Safe Eating Self-check", desc: "Answer yes or no for each habit to see where you can improve." }
+    ],
+    cmp_normal: "Normal swallow", cmp_asp: "Protection too late: aspiration",
+    lab_order_items: ["Chew food into a bolus", "Tongue pushes the bolus back", "Soft palate lifts to seal the nasopharynx", "Larynx rises, epiglottis tips, vocal folds close", "Upper oesophageal sphincter opens; bolus enters the oesophagus", "Peristalsis carries the bolus to the stomach"],
+    lab_order_hint: "Tap in order. Use Reset if you make a mistake.",
+    lab_order_reset: "Reset", lab_order_check: "Check",
+    lab_order_ok: "Perfect! That is the normal order of a swallow.",
+    lab_order_bad: "Not quite. The items marked in red are out of place.",
+    lab_order_your: "Your order",
+    lab_check_items: ["Sit upright, at about 90 degrees, when eating", "Take small mouthfuls and finish one before the next", "Avoid talking or watching TV while eating", "Stay seated upright for about 30 minutes after meals", "Clean the mouth and dentures after meals", "Follow professional advice on food texture and drink thickness"],
+    lab_yes: "Yes", lab_no: "No",
+    lab_check_result: "{n} of {total} habits in place",
+    lab_check_good: "Well done! Keep these habits going.",
+    lab_check_mid: "A good start. Begin with the items you answered No.",
+    lab_check_low: "Work through the items you answered No one at a time. If you often cough at meals, consult a doctor or speech-language pathologist.",
+    lab_check_note: "Note: compensatory postures such as the chin tuck should only be used after assessment by a speech-language pathologist.",
+
+    mres_nav: "8. Learning Resources", mres_title: "Learning Resources",
+    mres_desc: "Trusted external resources for further reading. In Taiwan, people with swallowing difficulty can visit a hospital rehabilitation or ENT department for a swallowing assessment by a speech-language pathologist.",
+    mres_groups: [
+      { title: "Understanding dysphagia", links: [
+        { label: "NIDCD: Dysphagia", url: "https://www.nidcd.nih.gov/health/dysphagia", desc: "Overview from the US National Institute on Deafness and Other Communication Disorders." },
+        { label: "MedlinePlus: Swallowing Disorders", url: "https://medlineplus.gov/swallowingdisorders.html", desc: "Patient-friendly health information from the US National Library of Medicine." },
+        { label: "ASHA: Adult Dysphagia", url: "https://www.asha.org/public/speech/swallowing/adult-dysphagia/", desc: "Signs and assessment of adult swallowing disorders from the American Speech-Language-Hearing Association." }
+      ]},
+      { title: "Food texture and care", links: [
+        { label: "IDDSI", url: "https://iddsi.org/", desc: "International Dysphagia Diet Standardisation Initiative: a framework for food textures and drink thickness." },
+        { label: "Mayo Clinic: Dysphagia", url: "https://www.mayoclinic.org/diseases-conditions/dysphagia/symptoms-causes/syc-20372028", desc: "Symptoms, causes and when to see a doctor." }
+      ]}
+    ],
+
+    analytics_nav: "9. Learning Analytics", analytics_title: "Learning Analytics",
+    analytics_desc: "Time on each unit, clicks, flashcards and quiz results are recorded in this browser to help you find the units worth reviewing.",
+    analytics_form_title: "Your details (for export)",
+    analytics_group: "Group", analytics_group_select: "Select", analytics_dept: "Dept / Year", analytics_dept_ph: "e.g. IBS3",
+    analytics_id: "Student ID", analytics_id_ph: "e.g. 113212599",
+    analytics_name_en: "English name", analytics_name_en_ph: "e.g. Shihmin Lo",
+    analytics_name_zh: "Chinese name", analytics_name_zh_ph: "e.g. 王阿吉",
+    analytics_export_csv: "Export CSV record", analytics_fill_required: "Complete all fields to unlock export",
+    analytics_refresh_prompt: "This guide has been updated. Clear your old records and start fresh?",
+    group_options: ["G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12","Others"],
+    analytics_total_time: "Total study time", analytics_total_clicks: "Total clicks", analytics_overall_acc: "Overall quiz accuracy", analytics_card_usage: "Flashcard usage",
+    analytics_module: "Unit", analytics_time: "Time", analytics_clicks: "Clicks", analytics_acc: "Accuracy",
+    analytics_correct_ans_total: "Correct / Total", analytics_cards_read_total: "Read / Total",
+    analytics_no_data: "Not attempted", analytics_sec: "s", analytics_times: "",
+    analytics_progress_title: "Overall progress", analytics_progress_visited: "Visited", analytics_progress_not_visited: "Not visited", analytics_progress_quiz_done: "Quiz done",
+    analytics_wp_title: "Weak points & review", analytics_wp_incorrect: "Missed questions:", analytics_wp_goto: "→ Review this unit",
+    analytics_wp_allpass: "Every unit you have tested is at 75% or above. Excellent work!",
+    analytics_wp_none: "Suggestions appear here after you complete a unit check.",
+    analytics_wp_saved: "💾 Your progress is saved automatically in this browser", analytics_wp_clear: "🗑 Clear records",
+    analytics_wp_clear_confirm: "Clear all learning records? This cannot be undone.",
+    analytics_wp_tts_intro: "Here is your weak-point analysis.", analytics_wp_tts_module: "Unit: {name}, accuracy {acc} percent. Review recommended.",
+    analytics_wp_tts_allpass: "Congratulations! Every unit you have tested is at 75 percent or above.",
+
+    date: "Version 2026.10.23", copyright: "For Educational Use Only",
+    architect_label: "Architect:", architect_name: "Prof. Shihmin Lo",
+    architect_url: "https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo"
+  }
+};
+
+const MODULE_ICONS = ['📋','🧭','🌬️','👅','🛡️','⬇️','⚠️','🧪','🌐','📊'];
+const MODULE_ANIM = [null, 'anatomy', 'breath', 'oral', 'pharyngeal', 'esophageal', 'aspiration'];
+
+/* ===== Shared components ===== */
+const shuffleIdx = (n) => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+const H2 = ({ children, icon, number }) => (
+  <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-[#004030] dark:text-[#D8C3A5] mb-6 flex items-center gap-3" style={{textWrap:'balance'}}>
+    {icon && <span className="text-2xl" aria-hidden="true">{icon}</span>}
+    {number !== undefined && <span>{number}.</span>}
+    <span>{children}</span>
+  </h2>
+);
+
+const Label = ({ children }) => <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">{children}</h3>;
+
+const FlipCardDeck = ({ terms, t, moduleId, onCardRead }) => {
+  const [groupIdx, setGroupIdx] = useState(0);
+  const [flipped, setFlipped] = useState({});
+  const [readSet, setReadSet] = useState(new Set());
+  const [shownSet, setShownSet] = useState(new Set());
+  const [order] = useState(() => shuffleIdx(terms.length));
+  const groupSize = 2;
+  const totalGroups = Math.ceil(terms.length / groupSize);
+  const current = order.slice(groupIdx * groupSize, groupIdx * groupSize + groupSize);
+  useEffect(() => {
+    setShownSet(prev => { const n = new Set(prev); current.forEach(i => n.add(i)); return n; });
+  }, [groupIdx]);
+  const handleFlip = (idx) => {
+    setFlipped(f => ({ ...f, [idx]: !f[idx] }));
+    if (!readSet.has(idx)) {
+      const nr = new Set(readSet); nr.add(idx); setReadSet(nr);
+      onCardRead && onCardRead(moduleId, nr.size, shownSet.size, terms.length);
+    }
+  };
+  const status = t.flip_status.replace('{read}', readSet.size).replace('{shown}', shownSet.size).replace('{total}', terms.length);
+  return (
+    <div className="mt-2">
+      <Label>{t.key_terms}</Label>
+      <p className="text-sm text-slate-400 mb-4">{status}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {current.map(idx => {
+          const term = terms[idx];
+          return (
+            <div key={idx} className="perspective cursor-pointer h-40" onClick={() => handleFlip(idx)} role="button" tabIndex="0"
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(idx); } }}>
+              <div className={`transform-style-3d relative w-full h-full transition-transform duration-500 ${flipped[idx] ? 'rotate-y-180' : ''}`}>
+                <div className="backface-hidden absolute inset-0 bg-white dark:bg-slate-800 rounded-xl p-4 flex flex-col items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <p className="font-serif font-bold text-center text-[#004030] dark:text-[#D8C3A5]">{term.front}</p>
+                  <p className="text-xs text-slate-400 mt-2">{t.flip_prompt}</p>
+                </div>
+                <div className="backface-hidden rotate-y-180 absolute inset-0 bg-[#004030] dark:bg-slate-700 rounded-xl p-4 flex items-center justify-center">
+                  <p className="text-sm text-center text-[#D8C3A5] dark:text-slate-200 leading-relaxed">{term.back}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-3 mt-4">
+        <button onClick={() => { setGroupIdx(0); setFlipped({}); }} className="px-4 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">{t.flip_retry}</button>
+        <button onClick={() => groupIdx < totalGroups - 1 && setGroupIdx(groupIdx + 1)} disabled={groupIdx >= totalGroups - 1}
+          className="px-4 py-2 text-sm bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold rounded-lg disabled:opacity-40">{t.flip_next}</button>
+      </div>
+    </div>
+  );
+};
+
+const ModuleQuiz = ({ questions, t, moduleId, onQuizSubmit, moduleName }) => {
+  const [selected, setSelected] = useState({});
+  const [submitted, setSubmitted] = useState({});
+  const [groupIdx, setGroupIdx] = useState(0);
+  const groupSize = 2;
+  const [quizIndices] = useState(() => shuffleIdx(questions.length));
+  const [shuffledMaps] = useState(() => quizIndices.map(q => shuffleIdx(questions[q].opts.length)));
+  const totalGroups = Math.ceil(quizIndices.length / groupSize);
+  const isRight = (qi) => selected[qi] !== undefined && shuffledMaps[qi][selected[qi]] === _d(questions[quizIndices[qi]].ans);
+  const correctCount = quizIndices.reduce((c, _, qi) => c + (isRight(qi) ? 1 : 0), 0);
+  const status = t.quiz_status.replace('{correct}', correctCount).replace('{answered}', Object.keys(selected).length).replace('{total}', quizIndices.length);
+  const start = groupIdx * groupSize;
+  const current = quizIndices.slice(start, start + groupSize);
+  const groupReady = current.every((_, i) => selected[start + i] !== undefined);
+  const handleGroupSubmit = () => {
+    if (!groupReady) return;
+    const ns = { ...submitted, [groupIdx]: true };
+    setSubmitted(ns);
+    if (Object.keys(ns).length === totalGroups) {
+      const wrong = []; let c = 0;
+      quizIndices.forEach((q, qi) => { if (isRight(qi)) c++; else wrong.push(questions[q].q); });
+      onQuizSubmit(moduleId, c, quizIndices.length, wrong, moduleName);
+    }
+  };
+  return (
+    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+      <h3 className="text-lg font-bold font-serif text-[#004030] dark:text-[#D8C3A5] mb-2">{t.quiz_title}</h3>
+      <p className="text-sm text-slate-400 mb-6">{status}</p>
+      {current.map((qIdx, li) => {
+        const qi = start + li; const q = questions[qIdx]; const sub = !!submitted[groupIdx];
+        return (
+          <div key={qIdx} className="mb-6">
+            <p className="font-bold mb-3 text-base">{qi + 1}. {q.q}</p>
+            <div className="space-y-2">
+              {shuffledMaps[qi].map((orig, dIdx) => {
+                const ok = orig === _d(q.ans); const sel = selected[qi] === dIdx;
+                return (
+                  <button key={dIdx} onClick={() => !sub && setSelected(s => ({ ...s, [qi]: dIdx }))}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition-all text-sm ${sub
+                      ? ok ? 'bg-green-100 border-green-500 dark:bg-green-900/30' : sel ? 'bg-red-100 border-red-400 dark:bg-red-900/30' : 'border-slate-200 dark:border-slate-700'
+                      : sel ? 'border-[#004030] dark:border-[#D8C3A5] bg-[#004030]/5 dark:bg-[#D8C3A5]/10' : 'border-slate-200 dark:border-slate-700 hover:border-slate-400'}`}>
+                    {q.opts[orig]}
+                  </button>
+                );
+              })}
+            </div>
+            {sub && <p className={`mt-2 text-sm italic ${isRight(qi) ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+              {isRight(qi) ? `✓ ${t.correct}` : `✗ ${t.incorrect}`} — {t.explanation}：{q.exp}</p>}
+          </div>
+        );
+      })}
+      <div className="flex items-center gap-3">
+        {!submitted[groupIdx]
+          ? <button onClick={handleGroupSubmit} disabled={!groupReady} className="px-6 py-2 bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold rounded-lg disabled:opacity-40">{t.submit}</button>
+          : <>
+              {groupIdx < totalGroups - 1 && <button onClick={() => setGroupIdx(groupIdx + 1)} className="px-6 py-2 bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold rounded-lg">{t.quiz_next}</button>}
+              <button onClick={() => { setGroupIdx(0); setSelected({}); setSubmitted({}); }} className="px-6 py-2 border border-[#004030] dark:border-[#D8C3A5] text-[#004030] dark:text-[#D8C3A5] font-bold rounded-lg">{t.quiz_retry}</button>
+            </>}
+      </div>
+    </div>
+  );
+};
+
+const LinkCard = ({ label, url, desc }) => (
+  <a href={url} target="_blank" rel="noopener noreferrer" className="block bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5] hover:shadow-md transition-all group">
+    <span className="font-bold font-serif text-sm text-[#004030] dark:text-[#D8C3A5] group-hover:underline">{label}</span>
+    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">{desc}</p>
+  </a>
+);
+
+/* ===== Lab components (top-level) ===== */
+const LabCard = ({ n, title, desc, children }) => (
+  <section className="bg-white dark:bg-slate-800 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700">
+    <h3 className="font-serif font-bold text-xl text-[#004030] dark:text-[#D8C3A5]">Lab {n} · {title}</h3>
+    <p className="text-base text-slate-600 dark:text-slate-400 mt-1 mb-4">{desc}</p>
+    {children}
+  </section>
+);
+
+const CompareLab = ({ lang, t }) => {
+  const loop = useAnimLoop(9, true);
+  const sN = stateFor('full', loop.u), sA = stateFor('aspiration', loop.u);
+  return (
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[['full', sN, t.cmp_normal], ['aspiration', sA, t.cmp_asp]].map(([m, s, title]) => (
+          <div key={m} className="rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/40">
+            <p className={`font-bold text-sm mb-2 ${m === 'aspiration' ? 'text-red-600 dark:text-red-400' : 'text-[#004030] dark:text-[#D8C3A5]'}`}>{title}</p>
+            <PhasePill s={s} t={t} mode={m}/>
+            <div className="svgwrap mt-2" onContextMenu={(e) => { e.preventDefault(); window.showCopyrightToast(); }}>
+              <SwallowSVG mode={m} u={loop.u} lang={lang} compact/>
+            </div>
+          </div>
+        ))}
+      </div>
+      <PlayerControls loop={loop} t={t}/>
+    </div>
+  );
+};
+
+const OrderLab = ({ t }) => {
+  const items = t.lab_order_items;
+  const [pool] = useState(() => shuffleIdx(items.length));
+  const [seq, setSeq] = useState([]);
+  const [checked, setChecked] = useState(false);
+  const allRight = seq.length === items.length && seq.every((v, i) => v === i);
+  return (
+    <div>
+      <p className="text-sm text-slate-500 mb-3">{t.lab_order_hint}</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {pool.map(i => {
+          const used = seq.includes(i);
+          return <button key={i} disabled={used} onClick={() => { setSeq([...seq, i]); setChecked(false); }}
+            className="px-3 py-2 rounded-lg border text-sm text-left border-slate-300 dark:border-slate-600 hover:border-[#004030] dark:hover:border-[#D8C3A5] disabled:opacity-30">{items[i]}</button>;
+        })}
+      </div>
+      <p className="text-sm font-bold mb-2">{t.lab_order_your}</p>
+      <ol className="space-y-2 mb-4">
+        {seq.map((v, pos) => (
+          <li key={pos} className={`flex gap-3 items-start px-3 py-2 rounded-lg text-sm border ${checked ? (v === pos ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-red-400 bg-red-50 dark:bg-red-900/20') : 'border-slate-200 dark:border-slate-700'}`}>
+            <span className="font-bold tabular-nums w-5 shrink-0">{pos + 1}</span><span>{items[v]}</span>
+          </li>
+        ))}
+      </ol>
+      <div className="flex flex-wrap gap-3 items-center">
+        <button onClick={() => { setSeq([]); setChecked(false); }} className="px-4 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg">{t.lab_order_reset}</button>
+        <button disabled={seq.length !== items.length} onClick={() => setChecked(true)} className="px-4 py-2 text-sm bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold rounded-lg disabled:opacity-40">{t.lab_order_check}</button>
+        {checked && <span className={`text-sm font-bold ${allRight ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{allRight ? t.lab_order_ok : t.lab_order_bad}</span>}
+      </div>
+    </div>
+  );
+};
+
+const ChecklistLab = ({ t }) => {
+  const [ans, setAns] = useState({});
+  const items = t.lab_check_items;
+  const done = Object.keys(ans).length;
+  const yes = Object.values(ans).filter(Boolean).length;
+  const msg = yes === items.length ? t.lab_check_good : yes >= 4 ? t.lab_check_mid : t.lab_check_low;
+  return (
+    <div>
+      <ul className="space-y-2">
+        {items.map((it, i) => (
+          <li key={i} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+            <span className="text-sm min-w-0 flex-1">{it}</span>
+            <span className="flex gap-1">
+              {[true, false].map(v => (
+                <button key={String(v)} onClick={() => setAns({ ...ans, [i]: v })}
+                  className={`px-3 py-1 rounded-md text-xs font-bold border ${ans[i] === v ? (v ? 'bg-green-600 text-white border-green-600' : 'bg-red-500 text-white border-red-500') : 'border-slate-300 dark:border-slate-600'}`}>{v ? t.lab_yes : t.lab_no}</button>
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {done === items.length && (
+        <div className="mt-4 p-4 rounded-xl bg-[#004030]/5 dark:bg-[#D8C3A5]/10 animate-fade-in">
+          <p className="font-bold">{t.lab_check_result.replace('{n}', yes).replace('{total}', items.length)}</p>
+          <p className="text-sm mt-1">{msg}</p>
+        </div>
+      )}
+      <p className="text-xs text-slate-500 mt-3">{t.lab_check_note}</p>
+    </div>
+  );
+};
+
+/* ===== App ===== */
+function App() {
+  const LS_KEY = 'SWL_SPA_analytics', LS_STU = 'SWL_SPA_student', LS_VER = 'SWL_SPA_version';
+  const loadLS = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+  const emptyAnalytics = () => ({ time: Array(TOTAL).fill(0), clicks: Array(TOTAL).fill(0), quizCorrect: Array(TOTAL).fill(0), quizTotal: Array(TOTAL).fill(0), cardsRead: Array(TOTAL).fill(0), cardsTotal: Array(TOTAL).fill(0), wrongTopics: {} });
+
+  const [lang, setLang] = useState('en');
+  const [isDark, setIsDark] = useState(true);
+  const [module, setModule] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [ttsState, setTtsState] = useState('idle');
+  const [studentInfo, setStudentInfo] = useState(() => loadLS(LS_STU, { group: '', dept: '', id: '', nameEn: '', nameZh: '' }));
+  const [analytics, setAnalytics] = useState(() => {
+    const a = loadLS(LS_KEY, null);
+    return a && Array.isArray(a.time) && a.time.length === TOTAL ? a : emptyAnalytics();
+  });
+  const menuRef = useRef(null);
+  const t = dict[lang];
+
+  const modulesList = [...Array(TOTAL).keys()].map(id => ({
+    id, icon: MODULE_ICONS[id], num: id,
+    nav: id === IDX_LAB ? t.mlab_nav : id === IDX_RES ? t.mres_nav : id === IDX_ANA ? t.analytics_nav : t[`m${id}_nav`],
+    title: id === IDX_LAB ? t.mlab_title : id === IDX_RES ? t.mres_title : id === IDX_ANA ? t.analytics_title : t[`m${id}_title`],
+  }));
+
+  useEffect(() => { document.documentElement.classList.toggle('dark', isDark); }, [isDark]);
+  useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : 'en-GB'; }, [lang]);
+  useEffect(() => { try { localStorage.setItem(LS_KEY, JSON.stringify(analytics)); } catch {} }, [analytics]);
+  useEffect(() => { try { localStorage.setItem(LS_STU, JSON.stringify(studentInfo)); } catch {} }, [studentInfo]);
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(LS_VER);
+      const hasData = loadLS(LS_KEY, null);
+      if (v && v !== VERSION && hasData && window.confirm(dict.zh.analytics_refresh_prompt + '\n' + dict.en.analytics_refresh_prompt)) setAnalytics(emptyAnalytics());
+      localStorage.setItem(LS_VER, VERSION);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (document.hidden) return;
+      setAnalytics(a => { const tm = [...a.time]; tm[module] += 1; return { ...a, time: tm }; });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [module]);
+  useEffect(() => {
+    const h = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, []);
+  useEffect(() => () => { try { speechSynthesis.cancel(); } catch {} }, []);
+
+  const go = (m) => { try { speechSynthesis.cancel(); } catch {} setTtsState('idle'); setModule(m); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const countClick = () => setAnalytics(a => { const c = [...a.clicks]; c[module] += 1; return { ...a, clicks: c }; });
+
+  const handleQuizSubmit = (mid, correct, total, wrongQs) => {
+    setAnalytics(a => {
+      const qc = [...a.quizCorrect], qt = [...a.quizTotal]; qc[mid] = correct; qt[mid] = total;
+      return { ...a, quizCorrect: qc, quizTotal: qt, wrongTopics: { ...a.wrongTopics, [mid]: wrongQs || [] } };
+    });
+  };
+  const handleCardRead = (mid, readCount, shownCount, totalCount) => {
+    setAnalytics(a => {
+      const cr = [...a.cardsRead], ct = [...a.cardsTotal]; cr[mid] = Math.max(cr[mid], readCount); ct[mid] = totalCount;
+      return { ...a, cardsRead: cr, cardsTotal: ct };
+    });
+  };
+
+  /* ---- TTS ---- */
+  const handleTTS = (action) => {
+    if (!('speechSynthesis' in window)) return;
+    if (action === 'stop') { speechSynthesis.cancel(); setTtsState('idle'); return; }
+    if (action === 'pause') { speechSynthesis.pause(); setTtsState('paused'); return; }
+    if (ttsState === 'paused') { speechSynthesis.resume(); setTtsState('playing'); return; }
+    speechSynthesis.cancel();
+    const sep = lang === 'zh' ? '。 ' : '. ';
+    let texts = [];
+    if (module === 0) {
+      texts = [t.title, t.m0_title, t.m0_intro, t.m0_why, t.m0_why_desc, ...t.m0_stats.map(s => `${s.label}: ${s.val}`), ...t.m0_modules.map(m => `${m.title}. ${m.desc}`), t.m0_disclaimer];
+    } else if (module >= 1 && module <= NUM_LEARN) {
+      const mk = `m${module}`;
+      texts = [t[`${mk}_title`], t.overview_label, t[`${mk}_overview`], ...t[`${mk}_highlights`], t.deep_dive_label,
+        ...[1,2,3,4,5].map(n => t[`${mk}_p${n}`]).filter(Boolean),
+        ...t[`${mk}_terms`].flatMap(x => [x.front, x.back]), t.wrapup_label, t[`${mk}_wrapup`]];
+    } else if (module === IDX_LAB) {
+      texts = [t.mlab_title, t.mlab_desc, ...t.mlab_labs.map(l => `${l.title}. ${l.desc}`)];
+    } else if (module === IDX_RES) {
+      texts = [t.mres_title, t.mres_desc, ...t.mres_groups.flatMap(g => [g.title, ...g.links.map(l => l.desc)])];
+    } else if (module === IDX_ANA) {
+      const tc = analytics.quizCorrect.reduce((a, b) => a + b, 0), ta = analytics.quizTotal.reduce((a, b) => a + b, 0);
+      const oa = ta > 0 ? Math.round(tc / ta * 100) : 0;
+      const wk = [];
+      for (let i = 1; i <= NUM_LEARN; i++) if (analytics.quizTotal[i] > 0) { const a = Math.round(analytics.quizCorrect[i] / analytics.quizTotal[i] * 100); if (a < 75) wk.push({ name: modulesList[i].title, acc: a }); }
+      wk.sort((a, b) => a.acc - b.acc);
+      texts = [t.analytics_title, t.analytics_desc, `${t.analytics_total_time}: ${analytics.time.reduce((a, b) => a + b, 0)} ${t.analytics_sec}`, `${t.analytics_total_clicks}: ${analytics.clicks.reduce((a, b) => a + b, 0)} ${t.analytics_times}`, `${t.analytics_overall_acc}: ${oa}%`];
+      if (wk.length) { texts.push(t.analytics_wp_tts_intro); wk.forEach(w => texts.push(t.analytics_wp_tts_module.replace('{name}', w.name).replace('{acc}', w.acc))); }
+      else if (ta > 0) texts.push(t.analytics_wp_tts_allpass);
+    }
+    const clean = texts.filter(Boolean).map(s => s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}→←↑]/gu, '').trim());
+    const utt = new SpeechSynthesisUtterance(clean.join(sep));
+    utt.rate = 0.95;
+    const voices = speechSynthesis.getVoices();
+    if (lang === 'zh') {
+      const v = voices.find(v => v.lang === 'zh-TW' && v.name.includes('Yating')) || voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh'));
+      if (v) utt.voice = v; utt.lang = 'zh-TW';
+    } else {
+      const v = voices.find(v => v.lang === 'en-GB' && (v.name.includes('Male') || v.name.includes('Daniel'))) || voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en'));
+      if (v) utt.voice = v; utt.lang = 'en-GB';
+    }
+    utt.onend = () => setTtsState('idle'); utt.onerror = () => setTtsState('idle');
+    speechSynthesis.speak(utt); setTtsState('playing');
+  };
+
+  /* ---- Analytics helpers ---- */
+  const sanitizeStudentId = (v) => v.replace(/[^0-9]/g, '').slice(0, 12);
+  const sanitizeName = (v) => v.replace(/[<>"'&\\]/g, '').slice(0, 50);
+  const infoComplete = studentInfo.group && studentInfo.dept && studentInfo.id && studentInfo.nameEn && studentInfo.nameZh;
+  const clearAnalytics = () => {
+    if (!window.confirm(t.analytics_wp_clear_confirm)) return;
+    try { localStorage.removeItem(LS_KEY); } catch {}
+    setAnalytics(emptyAnalytics());
+  };
+  const exportCSV = () => {
+    if (!infoComplete) return;
+    const esc = (v) => `"${String(v).replace(/"/g, '""')}"`;
+    const rows = [['Group', 'Dept', 'Student ID', 'Name (EN)', 'Name (ZH)'].map(esc).join(','),
+      [studentInfo.group, studentInfo.dept, studentInfo.id, studentInfo.nameEn, studentInfo.nameZh].map(esc).join(','), '',
+      ['Unit', 'Time (s)', 'Clicks', 'Cards Read', 'Cards Total', 'Quiz Correct', 'Quiz Total', 'Accuracy (%)', 'Wrong Questions'].map(esc).join(',')];
+    for (let i = 0; i < TOTAL; i++) {
+      const acc = analytics.quizTotal[i] ? Math.round(analytics.quizCorrect[i] / analytics.quizTotal[i] * 100) : '';
+      rows.push([modulesList[i].nav, analytics.time[i], analytics.clicks[i], analytics.cardsRead[i], analytics.cardsTotal[i], analytics.quizCorrect[i], analytics.quizTotal[i], acc, (analytics.wrongTopics[i] || []).join(' | ')].map(esc).join(','));
+    }
+    const d = new Date(); const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = `${dict.zh.brand} ${dict.zh.title}_${studentInfo.nameEn} ${studentInfo.nameZh}_${ymd}.csv`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  /* ---- Views ---- */
+  const renderM0 = () => (
+    <div className="space-y-8 animate-fade-in">
+      <section className="rounded-3xl bg-[#004030] text-white p-6 sm:p-8 overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-6 items-center">
+          <div className="min-w-0">
+            <p className="text-[#D8C3A5] text-xs font-bold uppercase tracking-[0.2em] mb-3">{t.brand} · {t.subtitle}</p>
+            <h1 className="font-serif font-black text-3xl sm:text-4xl leading-tight mb-2" style={{textWrap:'balance'}}>{t.title}</h1>
+            <p className="font-serif italic text-[#D8C3A5] text-xl mb-4">{t.m0_title}</p>
+            <p className="text-base leading-relaxed text-white/90">{t.m0_intro}</p>
+            <button onClick={() => go(1)} className="mt-6 px-6 py-3 bg-[#D8C3A5] text-[#004030] font-bold rounded-xl hover:bg-white transition-colors">{t.m0_start}</button>
+          </div>
+          <div className="min-w-0 text-slate-800 dark:text-slate-200"><AnimPlayer mode="full" lang={lang} t={t} partInfo={false}/></div>
+        </div>
+      </section>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {t.m0_stats.map((s, i) => (
+          <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+            <p className="font-serif font-black text-2xl text-[#004030] dark:text-[#D8C3A5] tabular-nums">{s.val}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
+      <section>
+        <h3 className="font-serif font-bold text-xl text-[#004030] dark:text-[#D8C3A5] mb-2">{t.m0_why}</h3>
+        <p className="text-lg leading-relaxed">{t.m0_why_desc}</p>
+        <div className="mt-4 flex gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200">
+          <IconAlertTriangle className="shrink-0 mt-0.5"/><p className="text-sm">{t.m0_disclaimer}</p>
+        </div>
+      </section>
+      <section className="grid sm:grid-cols-2 gap-3">
+        {t.m0_modules.map((m, i) => (
+          <button key={i} onClick={() => go(i + 1)} className="text-left flex gap-4 bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+            <span className="font-serif font-black text-2xl text-[#D8C3A5] dark:text-[#D8C3A5]/70 tabular-nums">{m.num}</span>
+            <span className="min-w-0"><span className="block font-bold text-[#004030] dark:text-[#D8C3A5]">{MODULE_ICONS[i + 1]} {m.title}</span><span className="block text-sm text-slate-500 dark:text-slate-400 mt-1">{m.desc}</span></span>
+          </button>
+        ))}
+      </section>
+    </div>
+  );
+
+  const renderLearn = () => {
+    const mk = `m${module}`;
+    return (
+      <div className="space-y-8 text-lg leading-relaxed text-slate-700 dark:text-slate-300 animate-fade-in">
+        <H2 icon={MODULE_ICONS[module]} number={module}>{t[`${mk}_title`]}</H2>
+        <div className="bg-[#004030]/5 dark:bg-[#D8C3A5]/5 rounded-xl p-5 border-l-4 border-[#D8C3A5]">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">{t.overview_label}</h3>
+          <p>{t[`${mk}_overview`]}</p>
+        </div>
+        <div>
+          <Label>{t.highlights_label}</Label>
+          <div className="flex flex-wrap gap-2">
+            {t[`${mk}_highlights`].map((h, i) => <span key={i} className="px-3 py-1 bg-[#004030]/10 dark:bg-[#D8C3A5]/10 text-[#004030] dark:text-[#D8C3A5] rounded-full text-sm font-medium">{h}</span>)}
+          </div>
+        </div>
+        <div className="space-y-4">
+          <Label>{t.deep_dive_label}</Label>
+          <p>{t[`${mk}_p1`]}</p>
+          <p className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg italic font-serif text-base">{t[`${mk}_p2`]}</p>
+          <p>{t[`${mk}_p3`]}</p>
+        </div>
+        <div>
+          <Label>{t.anim_label}</Label>
+          <AnimPlayer key={`anim-${module}`} mode={MODULE_ANIM[module]} lang={lang} t={t}/>
+        </div>
+        <FlipCardDeck key={`cards-${module}-${lang}`} terms={t[`${mk}_terms`]} t={t} moduleId={module} onCardRead={handleCardRead}/>
+        <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-5">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">{t.wrapup_label}</h3>
+          <p className="italic">{t[`${mk}_wrapup`]}</p>
+        </div>
+        <ModuleQuiz key={`quiz-${module}`} questions={t[`${mk}_q`]} t={t} moduleId={module} onQuizSubmit={handleQuizSubmit} moduleName={t[`${mk}_title`]}/>
+      </div>
+    );
+  };
+
+  const renderLab = () => (
+    <div className="space-y-6 animate-fade-in">
+      <H2 icon={MODULE_ICONS[IDX_LAB]} number={IDX_LAB}>{t.mlab_title}</H2>
+      <p className="text-lg leading-relaxed">{t.mlab_desc}</p>
+      <LabCard n={1} title={t.mlab_labs[0].title} desc={t.mlab_labs[0].desc}><AnimPlayer mode="full" lang={lang} t={t}/></LabCard>
+      <LabCard n={2} title={t.mlab_labs[1].title} desc={t.mlab_labs[1].desc}><CompareLab lang={lang} t={t}/></LabCard>
+      <LabCard n={3} title={t.mlab_labs[2].title} desc={t.mlab_labs[2].desc}><OrderLab key={`order-${lang}`} t={t}/></LabCard>
+      <LabCard n={4} title={t.mlab_labs[3].title} desc={t.mlab_labs[3].desc}><ChecklistLab key={`check-${lang}`} t={t}/></LabCard>
+    </div>
+  );
+
+  const renderRes = () => (
+    <div className="space-y-6 animate-fade-in">
+      <H2 icon={MODULE_ICONS[IDX_RES]} number={IDX_RES}>{t.mres_title}</H2>
+      <p className="text-lg leading-relaxed">{t.mres_desc}</p>
+      {t.mres_groups.map((g, i) => (
+        <section key={i}>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{g.title}</h3>
+          <div className="grid sm:grid-cols-2 gap-3">{g.links.map((l, j) => <LinkCard key={j} {...l}/>)}</div>
+        </section>
+      ))}
+    </div>
+  );
+
+  const renderAna = () => {
+    const sum = (a) => a.reduce((x, y) => x + y, 0);
+    const tc = sum(analytics.quizCorrect), ta = sum(analytics.quizTotal);
+    const oa = ta ? Math.round(tc / ta * 100) : 0;
+    const cr = sum(analytics.cardsRead), ctot = [...Array(NUM_LEARN).keys()].reduce((s, i) => s + dict.zh[`m${i + 1}_terms`].length, 0);
+    const weak = [];
+    for (let i = 1; i <= NUM_LEARN; i++) if (analytics.quizTotal[i]) { const a = Math.round(analytics.quizCorrect[i] / analytics.quizTotal[i] * 100); if (a < 75) weak.push({ i, a }); }
+    weak.sort((x, y) => x.a - y.a);
+    const visited = (i) => analytics.time[i] > 0;
+    const learnVisited = [...Array(NUM_LEARN).keys()].filter(k => visited(k + 1)).length;
+    const field = (key, label, ph, sanitize) => (
+      <label className="block text-sm">
+        <span className="font-semibold">{label}</span>
+        <input id={`stu-${key}`} value={studentInfo[key]} placeholder={ph} onChange={(e) => setStudentInfo({ ...studentInfo, [key]: sanitize(e.target.value) })}
+          className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900"/>
+      </label>
+    );
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <H2 icon={MODULE_ICONS[IDX_ANA]} number={IDX_ANA}>{t.analytics_title}</H2>
+        <p className="text-lg leading-relaxed">{t.analytics_desc}</p>
+        <p className="text-sm text-green-700 dark:text-green-400">{t.analytics_wp_saved}</p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[[t.analytics_total_time, `${sum(analytics.time)} ${t.analytics_sec}`], [t.analytics_total_clicks, `${sum(analytics.clicks)} ${t.analytics_times}`], [t.analytics_overall_acc, ta ? `${oa}%` : '—'], [t.analytics_card_usage, `${ctot ? Math.round(cr / ctot * 100) : 0}%`]].map(([l, v], i) => (
+            <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <p className="text-sm text-slate-500">{l}</p><p className="font-serif font-black text-2xl text-[#004030] dark:text-[#D8C3A5] tabular-nums mt-1">{v}</p>
+            </div>
+          ))}
+        </div>
+        <section className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
+          <h3 className="font-serif font-bold text-lg mb-3">{t.analytics_progress_title} <span className="text-sm font-sans text-slate-500 tabular-nums">({learnVisited}/{NUM_LEARN})</span></h3>
+          <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 mb-4"><div className="h-2 rounded-full bg-[#004030] dark:bg-[#D8C3A5]" style={{ width: `${learnVisited / NUM_LEARN * 100}%` }}></div></div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {[...Array(NUM_LEARN).keys()].map(k => { const i = k + 1; return (
+              <button key={i} onClick={() => go(i)} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-left hover:border-[#004030] dark:hover:border-[#D8C3A5]">
+                <span className="truncate">{modulesList[i].nav}</span>
+                <span className="flex gap-1 shrink-0">
+                  <span className={`px-2 py-0.5 rounded-full text-xs ${visited(i) ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-700'}`}>{visited(i) ? t.analytics_progress_visited : t.analytics_progress_not_visited}</span>
+                  {analytics.quizTotal[i] > 0 && <span className="px-2 py-0.5 rounded-full text-xs bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300">{t.analytics_progress_quiz_done}</span>}
+                </span>
+              </button>); })}
+          </div>
+        </section>
+        <section className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
+          <h3 className="font-serif font-bold text-lg mb-3">{t.analytics_wp_title}</h3>
+          {ta === 0 ? <p className="text-sm text-slate-500">{t.analytics_wp_none}</p>
+            : weak.length === 0 ? <p className="text-sm text-green-700 dark:text-green-400 font-semibold">{t.analytics_wp_allpass}</p>
+            : <div className="space-y-3">{weak.map(w => (
+                <div key={w.i} className="p-4 rounded-lg border-l-4 border-red-400 bg-red-50 dark:bg-red-900/20">
+                  <p className="font-bold">{modulesList[w.i].nav} · <span className="tabular-nums">{w.a}%</span></p>
+                  <p className="text-sm mt-1">{t.analytics_wp_incorrect}</p>
+                  <ul className="list-disc pl-5 text-sm">{(analytics.wrongTopics[w.i] || []).map((q, j) => <li key={j}>{q}</li>)}</ul>
+                  <button onClick={() => go(w.i)} className="text-sm font-bold text-[#004030] dark:text-[#D8C3A5] mt-2">{t.analytics_wp_goto}</button>
+                </div>))}</div>}
+        </section>
+        <section className="overflow-x-auto bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+          <table className="w-full text-sm tabular-nums">
+            <thead className="bg-slate-50 dark:bg-slate-900/50 text-left"><tr>
+              {[t.analytics_module, t.analytics_time, t.analytics_clicks, t.analytics_cards_read_total, t.analytics_correct_ans_total, t.analytics_acc].map((h, i) => <th key={i} className="px-3 py-2 font-semibold whitespace-nowrap">{h}</th>)}
+            </tr></thead>
+            <tbody>{modulesList.map(m => (
+              <tr key={m.id} className="border-t border-slate-200 dark:border-slate-700">
+                <td className="px-3 py-2">{m.nav}</td>
+                <td className="px-3 py-2">{analytics.time[m.id]} {t.analytics_sec}</td>
+                <td className="px-3 py-2">{analytics.clicks[m.id]}</td>
+                <td className="px-3 py-2">{m.id >= 1 && m.id <= NUM_LEARN ? `${analytics.cardsRead[m.id]} / ${t[`m${m.id}_terms`].length}` : '—'}</td>
+                <td className="px-3 py-2">{analytics.quizTotal[m.id] ? `${analytics.quizCorrect[m.id]} / ${analytics.quizTotal[m.id]}` : (m.id >= 1 && m.id <= NUM_LEARN ? t.analytics_no_data : '—')}</td>
+                <td className="px-3 py-2">{analytics.quizTotal[m.id] ? `${Math.round(analytics.quizCorrect[m.id] / analytics.quizTotal[m.id] * 100)}%` : '—'}</td>
+              </tr>))}</tbody>
+          </table>
+        </section>
+        <section className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
+          <h3 className="font-serif font-bold text-lg mb-4">{t.analytics_form_title}</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <label className="block text-sm"><span className="font-semibold">{t.analytics_group}</span>
+              <select id="stu-group" value={studentInfo.group} onChange={(e) => setStudentInfo({ ...studentInfo, group: e.target.value })} className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900">
+                <option value="">{t.analytics_group_select}</option>{t.group_options.map(g => <option key={g} value={g}>{g}</option>)}
+              </select></label>
+            {field('dept', t.analytics_dept, t.analytics_dept_ph, (v) => sanitizeName(v).slice(0, 20))}
+            {field('id', t.analytics_id, t.analytics_id_ph, sanitizeStudentId)}
+            {field('nameEn', t.analytics_name_en, t.analytics_name_en_ph, sanitizeName)}
+            {field('nameZh', t.analytics_name_zh, t.analytics_name_zh_ph, sanitizeName)}
+          </div>
+          <div className="flex flex-wrap items-center gap-3 mt-5">
+            <button onClick={exportCSV} disabled={!infoComplete} className="px-5 py-2 bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold rounded-lg disabled:opacity-40">{t.analytics_export_csv}</button>
+            {!infoComplete && <span className="text-sm text-slate-500">{t.analytics_fill_required}</span>}
+            <button onClick={clearAnalytics} className="ml-auto px-4 py-2 rounded-lg bg-red-600 text-white font-bold text-sm">{t.analytics_wp_clear}</button>
+          </div>
+        </section>
+      </div>
+    );
+  };
+
+  const renderModule = () => module === 0 ? renderM0() : module <= NUM_LEARN ? renderLearn() : module === IDX_LAB ? renderLab() : module === IDX_RES ? renderRes() : renderAna();
+
+  return (
+    <div className="min-h-screen flex flex-col pt-16 overflow-x-hidden">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-[#004030] dark:bg-slate-900 text-white z-50 shadow-lg border-b border-[#D8C3A5]/30">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.nav_modules}>{menuOpen ? <IconX/> : <IconMenu/>}</button>
+              {menuOpen && (
+                <div className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-5rem)] overflow-y-auto bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-[100]">
+                  {modulesList.map(m => (
+                    <button key={m.id} onClick={() => go(m.id)} className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left ${module === m.id ? 'bg-[#004030]/10 dark:bg-[#D8C3A5]/10 font-bold text-[#004030] dark:text-[#D8C3A5]' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+                      <span aria-hidden="true">{m.icon}</span><span className="truncate">{m.nav}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={() => go(0)} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.nav_home}><IconHome size={18}/></button>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 min-w-0">
+              <span className="font-serif font-black text-[#D8C3A5] text-lg tracking-widest">{t.brand}</span>
+              <span className="hidden sm:inline font-serif font-bold text-sm md:text-base truncate">{t.title}</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={() => handleTTS(ttsState === 'playing' ? 'pause' : 'play')} className="flex items-center gap-1 px-2 py-2 hover:bg-white/10 rounded-lg text-sm" aria-label={t.audio_read}>
+              {ttsState === 'playing' ? <IconPause size={18}/> : <IconPlay size={18}/>}<span className="hidden md:inline">{t.audio_read}</span>
+            </button>
+            {ttsState !== 'idle' && <button onClick={() => handleTTS('stop')} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.audio_stop}><IconSquare size={18}/></button>}
+            <button onClick={() => { try { speechSynthesis.cancel(); } catch {} setTtsState('idle'); setLang(lang === 'en' ? 'zh' : 'en'); }} className="px-2 py-1 rounded-lg border border-[#D8C3A5]/50 text-[#D8C3A5] text-sm font-bold hover:bg-white/10">{lang === 'en' ? '中' : 'EN'}</button>
+            <button onClick={() => setIsDark(!isDark)} className="p-2 hover:bg-white/10 rounded-lg" aria-label="Theme">{isDark ? <IconSun size={18}/> : <IconMoon size={18}/>}</button>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex-1 w-full max-w-7xl mx-auto flex gap-6 px-4 py-6">
+        <aside className="hidden md:block w-64 shrink-0">
+          <nav className="sticky top-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-2 max-h-[calc(100vh-7rem)] overflow-y-auto">
+            <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500">{t.nav_modules}</p>
+            {modulesList.map(m => (
+              <button key={m.id} onClick={() => go(m.id)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left ${module === m.id ? 'bg-[#004030] text-white dark:bg-[#D8C3A5] dark:text-[#004030] font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+                <span className="shrink-0">{m.id === IDX_LAB ? <IconZapLab size={16}/> : m.id === IDX_RES ? <IconGlobe size={16}/> : m.id === IDX_ANA ? <IconActivity size={16}/> : <span aria-hidden="true">{m.icon}</span>}</span>
+                <span className="truncate">{m.nav}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+        <main className="flex-1 min-w-0" onClick={countClick}>
+          <div key={module}>{renderModule()}</div>
+          <div className="mt-12 flex justify-between items-center pt-8 border-t border-slate-300 dark:border-slate-700">
+            <button onClick={() => go(Math.max(0, module - 1))} disabled={module === 0} className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 font-bold text-sm disabled:opacity-0">← {t.nav_prev}</button>
+            <button onClick={() => go(Math.min(TOTAL - 1, module + 1))} disabled={module === TOTAL - 1} className="px-4 py-2 rounded-lg bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold text-sm disabled:opacity-0">{t.nav_next} →</button>
+          </div>
+        </main>
+      </div>
+
+      <footer className="min-h-8 py-1 bg-[#004030] flex flex-wrap items-center justify-between gap-x-4 px-4 shrink-0">
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs">{t.date} · {t.copyright}</span>
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-3">
+          <span>{t.architect_label}&nbsp;<a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">{t.architect_name}</a></span>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-[#D8C3A5] hover:text-white font-bold">Top ↑</button>
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+if (!window.__BLOCKED__) ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
